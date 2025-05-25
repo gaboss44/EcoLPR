@@ -13,7 +13,7 @@ publishing {
             pom {
                 name.set("${rootProject.name}-api")
                 description.set("API for ${rootProject.name}")
-                url.set("https://github.com/tunombredeusuario/turepositorio")
+                url.set("https://github.com/gaboss44/EcoLPR")
 
                 licenses {
                     license {
@@ -31,9 +31,9 @@ publishing {
                 }
 
                 scm {
-                    connection.set("scm:git:git://github.com/tunombredeusuario/turepositorio.git")
-                    developerConnection.set("scm:git:ssh://github.com/tunombredeusuario/turepositorio.git")
-                    url.set("https://github.com/tunombredeusuario/turepositorio")
+                    connection.set("scm:git:git://github.com/gaboss44/EcoLPR.git")
+                    developerConnection.set("scm:git:ssh://github.com/gaboss44/EcoLPR.git")
+                    url.set("https://github.com/gaboss44/EcoLPR")
                 }
             }
         }
@@ -42,10 +42,10 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/tunombredeusuario/turepositorio")
+            url = uri("https://maven.pkg.github.com/gaboss44/EcoLPR")
             credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+                username = "gaboss44"
+                password = System.getenv("MAVEN_TOKEN")?: throw GradleException("Publish token not found")
             }
         }
     }
