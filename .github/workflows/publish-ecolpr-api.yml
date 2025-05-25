@@ -30,5 +30,4 @@ jobs:
         with:
           arguments: publish
         env:
-          MAVEN_USERNAME: ${{ secrets.GITHUB_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.ECOLPR_API_PUBLISH_TOKEN }}
