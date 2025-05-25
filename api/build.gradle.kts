@@ -45,7 +45,7 @@ publishing {
             url = uri("https://maven.pkg.github.com/gaboss44/EcoLPR")
             credentials {
                 username = "gaboss44"
-                password = System.getenv("MAVEN_TOKEN")?: throw GradleException("Publish token not found")
+                password = System.getenv("MAVEN_PASSWORD")?: throw GradleException("Publish token not found")
             }
         }
     }
