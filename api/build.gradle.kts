@@ -44,7 +44,7 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/gaboss44/EcoLPR")
             credentials {
-                username = "gaboss44"
+                username = System.getenv("MAVEN_USERNAME")?: throw GradleException("Github username not found")
                 password = System.getenv("MAVEN_PASSWORD")?: throw GradleException("Publish token not found")
             }
         }
