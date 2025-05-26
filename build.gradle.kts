@@ -4,64 +4,47 @@ plugins {
     `maven-publish`
     kotlin("jvm") version "2.1.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.willfp.libreforge-gradle-plugin") version "1.0.3"
 }
 
 group = "com.github.gaboss44"
 version = findProperty("version")!!
 val libreforgeVersion = findProperty("libreforge-version")
 
-base {
-    archivesName.set("project.name")
-}
-
 allprojects {
-    apply(plugin = "java")
-    apply(plugin = "kotlin")
+    apply(plugin = "java-library")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "maven-publish")
-    apply(plugin = "com.github.johnrengelman.shadow")
+
+    group = rootProject.group
+    version = rootProject.version
 
     repositories {
         mavenLocal()
         mavenCentral()
-
-        maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") {
-            name = "spigotmc-repo"
-        }
+        maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") { name = "spigotmc-repo" }
+        maven("https://oss.sonatype.org/content/groups/public/") { name = "sonatype" }
         maven("https://repo.auxilor.io/repository/maven-public/")
         maven("https://jitpack.io")
-    }
-
-    repositories {
-        mavenCentral()
     }
 
     dependencies {
         compileOnly("com.willfp:eco:6.75.0")
         compileOnly("org.jetbrains:annotations:24.0.1")
-        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
+        implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.21")
     }
 
-    java {
-        withSourcesJar()
-        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    kotlin {
+        jvmToolchain(17)
     }
-
 
     tasks {
-        shadowJar {
-            relocate("com.willfp.libreforge.loader", "com.github.gaboss44.ecolpr.libreforge.loader")
-            relocate("com.willfp.ecomponent", "com.github.gaboss44.ecolpr.ecomponent")
-        }
-
-        kotlin {
-            jvmToolchain(17)
-        }
-
-        compileJava {
-            options.isDeprecation = true
-            options.encoding = "UTF-8"
-            dependsOn(clean)
+        withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            compilerOptions {
+                apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+                languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+            }
         }
 
         processResources {
@@ -73,9 +56,32 @@ allprojects {
                 )
             }
         }
+    }
+}
 
-        build {
-            dependsOn(shadowJar)
-        }
+dependencies {
+    implementation(project(":api"))
+    implementation(project(":core"))
+}
+
+tasks {
+    shadowJar {
+        archiveClassifier.set("")
+
+        dependsOn(":api:build", ":core:build")
+
+        from(project(":api").sourceSets.main.get().output)
+        from(project(":core").sourceSets.main.get().output)
+
+        configurations = listOf(project.configurations.runtimeClasspath.get())
+
+        relocate("com.willfp.libreforge.loader", "com.github.gaboss44.ecolpr.libreforge.loader")
+        relocate("com.willfp.ecomponent", "com.github.gaboss44.ecolpr.ecomponent")
+
+        mergeServiceFiles()
+    }
+
+    build {
+        dependsOn(shadowJar)
     }
 }
