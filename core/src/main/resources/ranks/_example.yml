@@ -1,0 +1,22 @@
+id-override: 'luckperms_group1'
+display-name: '&aExample Rank 1'
+
+# Logic to run when the rank is being entered by a player
+on_enter:
+  - from: 'example_rank2'
+    conditions: [ ]
+    effects:
+    - event-status: success
+      id: send_message
+      args:
+        message: '&aYou have entered Example Rank 1!'
+
+# Logic to run when the rank is being left by a player
+on_leave:
+  - from: 'example_rank2'
+    conditions: [ ]
+    effects:
+    - event-status: success
+      id: send_message
+      args:
+        message: '&cYou have left Example Rank 1!'

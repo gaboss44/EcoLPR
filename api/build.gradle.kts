@@ -4,6 +4,7 @@ version = rootProject.version
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     implementation("com.willfp:ecomponent:1.4.1")
+    compileOnly("net.luckperms:api:5.4")
 }
 
 kotlin {
@@ -41,7 +42,7 @@ publishing {
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/gaboss44/EcoLPR")
-            credentials {
+            credentials(PasswordCredentials::class) {
                 username = System.getenv("MAVEN_USERNAME")
                 password = System.getenv("MAVEN_PASSWORD")
             }

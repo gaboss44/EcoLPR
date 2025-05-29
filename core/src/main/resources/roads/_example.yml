@@ -1,0 +1,7 @@
+id-override: "luckperms_track1"
+display-name: "&aExample Road 1"
+
+context:
+  - "world=example_world"
+  - "server=example_server"
+

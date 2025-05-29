@@ -1,8 +1,8 @@
-name: EcoLprPlugin
+name: EcoLPR
 version: '1.0.0'
 main: com.github.gaboss44.ecolpr.EcoLprPlugin
 api-version: '1.18'
 prefix: EcoLPR
 load: STARTUP
-authors: [gaboss]
+authors: [gaboss44]
 description: Eco & Luckperms Powered RankUp Spigot Plugin

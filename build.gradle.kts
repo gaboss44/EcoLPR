@@ -4,6 +4,7 @@ plugins {
     `maven-publish`
     kotlin("jvm") version "2.1.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.willfp.libreforge-gradle-plugin") version "1.0.0"
 }
 
 group = "com.github.gaboss44"
@@ -25,13 +26,14 @@ allprojects {
         maven("https://oss.sonatype.org/content/groups/public/") { name = "sonatype" }
         maven("https://repo.auxilor.io/repository/maven-public/")
         maven("https://jitpack.io")
+        maven("https://repo.lucko.me/") { name = "LuckPerms" }
     }
 
     dependencies {
         compileOnly("com.willfp:eco:6.75.0")
         compileOnly("org.jetbrains:annotations:24.0.1")
-        implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
-        implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.21")
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
+        // compileOnly("org.jetbrains.kotlin:kotlin-reflect:2.1.21")
     }
 
     kotlin {
@@ -83,5 +85,9 @@ tasks {
 
     build {
         dependsOn(shadowJar)
+    }
+
+    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>().configureEach {
+        minimize()
     }
 }

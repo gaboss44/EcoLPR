@@ -5,6 +5,7 @@ dependencies {
     api(project(":api"))
     implementation("com.willfp:ecomponent:1.4.1")
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
+    implementation("net.luckperms:api:5.5")
 }
 
 kotlin {
