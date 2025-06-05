@@ -5,6 +5,7 @@ dependencies {
     api(project(":api"))
     implementation("com.willfp:ecomponent:1.4.1")
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
+    compileOnly("com.github.ben-manes.caffeine:caffeine:3.2.0")
     implementation("net.luckperms:api:5.5")
 }
 

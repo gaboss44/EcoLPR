@@ -1,7 +1,73 @@
+# Optional 
+# - The id to look for the road's underlying luckperms track with
+# - If not specified, the filename will be used instead
 id-override: "luckperms_track1"
+
+# Optional
+# The display name of the road
+# If not specified, the filename will be used instead
 display-name: "&aExample Road 1"
 
-context:
-  - "world=example_world"
-  - "server=example_server"
+# Optional
+# The query options to determine the context in which the road is applicable
+# If not specified, the road will be applicable in a global context
+query-options:
+  # The context set to use for the road when promoting or demoting players
+  # Each subsection represents a context key, and its associated values represent the context values
+  context:
+    server:
+      - survival
+      - factions
+    world:
+      - world
+      - world_nether
+    gamemode: survival
 
+  # Optional
+  # The flags to apply to the query options
+  # Any flag defaults to true if not declared here
+  # The following descriptions are extracted from LuckPerms documentation
+  flags:
+    # If parent groups should be resolved
+    resolve_inheritance: true
+    # If global or non-server-specific nodes should be applied
+    include_nodes_without_server_context: true
+    # If global or non-world-specific nodes should be applied
+    include_nodes_without_world_context: true
+    # If global or non-server-specific group memberships should be applied
+    apply_inheritance_nodes_without_server_context: true
+    # If global or non-world-specific group memberships should be applied
+    apply_inheritance_nodes_without_world_context: true
+
+placeholders:
+  money: "1000"
+
+# Optional
+# The conditions that must be met by the player before ranking up
+conditions: [ ]
+
+pre-rank-up-effects:
+  - effects: []
+    args:
+      from-rank: "example_rank1"
+      to-rank: "example_rank2"
+      source: natural
+      direction: up
+      # 'status' is yet to be determined at post-rank-up
+
+post-rank-up-effects:
+  - effects: []
+    args:
+      from-rank: "example_rank1"
+      to-rank: "example_rank2"
+      source: natural
+      direction: up
+      status: success
+      statuses:
+        - success
+        - failure
+        - cancelled
+        - condition_failed
+        - missing_track
+        - last_group
+        - unsatisfied_query

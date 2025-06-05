@@ -1,4 +1,4 @@
-package com.github.gaboss44.ecolpr.prestige
+package com.github.gaboss44.ecolpr.rank
 
 import com.willfp.eco.core.registry.KRegistrable
 

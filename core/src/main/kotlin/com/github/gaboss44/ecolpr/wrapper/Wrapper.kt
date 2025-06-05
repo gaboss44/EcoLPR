@@ -4,7 +4,7 @@ import com.github.gaboss44.ecolpr.EcoLprPlugin
 
 abstract class Wrapper<T>(
     protected val plugin : EcoLprPlugin,
-    val obj : T
+    internal val obj : T
 ) {
     /**
      * Returns the wrapped object as a String.

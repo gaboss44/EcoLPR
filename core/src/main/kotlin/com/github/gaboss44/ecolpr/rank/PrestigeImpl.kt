@@ -1,6 +1,7 @@
-package com.github.gaboss44.ecolpr.prestige
+package com.github.gaboss44.ecolpr.rank
 
 import com.github.gaboss44.ecolpr.EcoLprPlugin
+import com.github.gaboss44.ecolpr.rank.Prestige
 import com.willfp.eco.core.config.interfaces.Config
 
 class PrestigeImpl(
