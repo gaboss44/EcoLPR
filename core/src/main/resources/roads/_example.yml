@@ -42,6 +42,8 @@ query-options:
 placeholders:
   money: "1000"
 
+prestige: 'example_prestige'
+
 # Optional
 # The conditions that must be met by the player before ranking up
 conditions: [ ]

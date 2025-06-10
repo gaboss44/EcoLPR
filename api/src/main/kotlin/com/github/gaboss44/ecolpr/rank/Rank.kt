@@ -1,10 +1,10 @@
 package com.github.gaboss44.ecolpr.rank
 
+import com.github.gaboss44.ecolpr.road.Road
 import com.willfp.eco.core.registry.KRegistrable
 import net.luckperms.api.query.QueryOptions
 import org.bukkit.entity.Player
 import org.jetbrains.annotations.ApiStatus
-import java.util.UUID
 
 /**
  * Represents a rank within the plugin's ranking system.
@@ -22,6 +22,11 @@ interface Rank : KRegistrable {
      * This is used to link the rank logic to a specific group in LuckPerms.
      */
     val idOverride: String
+
+    /**
+     * The LuckPerms group permission node for this rank.
+     */
+    val groupNode: String get() = "group.$idOverride"
 
     /**
      * The display name of this rank, as defined in its configuration.
@@ -61,30 +66,4 @@ interface Rank : KRegistrable {
      * @return `true` if the player holds the rank with the given query options.
      */
     fun isHeldBy(player: Player, queryOptions: QueryOptions): Boolean
-
-    /**
-     * Checks if this rank is held by a player using their [UUID].
-     *
-     * @param playerId The unique ID of the player.
-     * @return `true` if the player holds the rank.
-     */
-    fun isHeldBy(playerId: UUID): Boolean
-
-    /**
-     * Checks if this rank is held by a player using their [UUID] and a specific [Road].
-     *
-     * @param playerId The unique ID of the player.
-     * @param road The [Road] configuration to apply during the lookup.
-     * @return `true` if the player holds the rank under the given road.
-     */
-    fun isHeldBy(playerId: UUID, road: Road): Boolean
-
-    /**
-     * Checks if this rank is held by a player using their [UUID] and specific [QueryOptions].
-     *
-     * @param playerId The unique ID of the player.
-     * @param queryOptions The [QueryOptions] to use for the check.
-     * @return `true` if the player holds the rank with the given query options.
-     */
-    fun isHeldBy(playerId: UUID, queryOptions: QueryOptions): Boolean
 }

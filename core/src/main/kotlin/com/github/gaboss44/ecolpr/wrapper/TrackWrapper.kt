@@ -1,6 +1,7 @@
 package com.github.gaboss44.ecolpr.wrapper
 
 import com.github.gaboss44.ecolpr.EcoLprPlugin
+import net.luckperms.api.context.ContextSet
 import net.luckperms.api.track.Track
 
 class TrackWrapper(
@@ -11,14 +12,14 @@ class TrackWrapper(
     val groups = track.groups
 
     /**
-     * Checks if the track contains a specific group.
+     * Checks if the track isTraveledBy a specific group.
      */
     fun contains(group: GroupWrapper): Boolean {
         return obj.containsGroup(group.obj)
     }
 
     /**
-     * Checks if the track contains a specific group.
+     * Checks if the track isTraveledBy a specific group.
      */
     fun contains(group: String): Boolean {
         return obj.containsGroup(group)
@@ -58,5 +59,9 @@ class TrackWrapper(
         } else {
             null
         }
+    }
+
+    fun promote(user: UserWrapper, context: ContextSet) {
+        obj.promote(user.obj, context)
     }
 }

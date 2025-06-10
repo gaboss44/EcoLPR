@@ -1,0 +1,14 @@
+
+message:
+  not-in-satisfying-road:
+    player: "There is no road that satisfies your current context."
+    admin: "There is no road that satisfies the current context of player %player%."
+  illegal-road:
+    player: "The current road is not applicable."
+    admin: "Tried to transition player %player% along an illegal road."
+  no-ranks-in-road:
+    player: "There are no ranks in this road."
+    admin: "Player %player% has no ranks in their current road."
+  last-rank-in-road:
+    player: "You are already at the last rank in this road."
+    admin: "Player %player% is already at the last rank in this road."

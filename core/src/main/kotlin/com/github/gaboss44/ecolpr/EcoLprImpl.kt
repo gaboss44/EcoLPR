@@ -1,27 +1,32 @@
 package com.github.gaboss44.ecolpr
 
+import com.github.gaboss44.ecolpr.prestige.Prestige
+import com.github.gaboss44.ecolpr.prestige.PrestigeCategory
 import com.github.gaboss44.ecolpr.rank.Rank
-import com.github.gaboss44.ecolpr.rank.Ranks
-import com.github.gaboss44.ecolpr.rank.Road
-import com.github.gaboss44.ecolpr.rank.Roads
+import com.github.gaboss44.ecolpr.rank.RankCategory
+import com.github.gaboss44.ecolpr.road.Road
+import com.github.gaboss44.ecolpr.road.RoadCategory
+import com.github.gaboss44.ecolpr.transition.RankTransitioner
 import net.luckperms.api.query.QueryOptions
-import java.util.UUID
+import org.bukkit.entity.Player
 
 class EcoLprImpl(private val plugin: EcoLprPlugin) : EcoLpr {
     override val defaultQueryOptions: QueryOptions get() = plugin.defaultQueryOptions
 
-    override val shouldDebug: Boolean = plugin.shouldDebug
+    override val rankTransitioner: RankTransitioner get() = plugin.rankTransitioner
 
-    override val shouldSelectMostSpecificRoad: Boolean = plugin.shouldSelectMostSpecificRoad
+    override fun getRankById(id: String): Rank? = RankCategory.getByID(id)
 
-    override fun getRankById(id: String): Rank? = Ranks.getByID(id)
+    override fun getRankByIdOverride(id: String): Rank? = RankCategory.getByIdOverride(id)
 
-    override fun getRankByIdOverride(id: String): Rank? = Ranks.getByIdOverride(id)
+    override fun getRoadById(id: String): Road? = RoadCategory.getByID(id)
 
-    override fun getRoadById(id: String): Road? = Roads.getByID(id)
+    override fun getRoadByIdOverride(id: String): Road? = RoadCategory.getByIdOverride(id)
 
-    override fun getRoadByIdOverride(id: String): Road? = Roads.getByIdOverride(id)
+    override fun getPrestigeById(id: String): Prestige? = PrestigeCategory.getByID(id)
 
-    override fun searchPlayerCurrentRoads(playerId: UUID): Set<Road> =
-        plugin.roadResolver.getPlayerRoads(playerId)
+    override fun getPrestigeByIdOverride(id: String): Prestige? = PrestigeCategory.getByIdOverride(id)
+
+    override fun getSatisfactoryRoads(player: Player): List<Road> =
+        plugin.roadResolver.getSatisfactoryRoads(player)
 }

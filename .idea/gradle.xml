@@ -17,6 +17,14 @@
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/core" />
       </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/plugin" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/plugin" />
+          </set>
+        </option>
+      </GradleProjectSettings>
     </option>
   </component>
 </project>

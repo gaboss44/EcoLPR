@@ -1,5 +1,31 @@
-id-override: 'luckperms_group1'
-display-name: '&aExample Rank 1'
+id-override: 'luckperms_example_rank'
+display-name: '&aExample Rank'
+
+
+
+####
+transition-truncation:
+  promotion:
+    truncate-from: false
+    truncate-to: false
+    bypass-from: "something.promotion.example_rank"
+    bypass-to: "something.promotion.example_rank"
+  demotion:
+    truncate-from: false
+    truncate-to: false
+    bypass-from: "something.demotion.example_rank"
+    bypass-to: "something.demotion.example_rank"
+  graduation:
+    truncate-from: false
+    truncate-to: false
+    bypass-from: "something.graduation.example_rank"
+    bypass-to: "something.graduation.example_rank"
+  reboot:
+    truncate-from: false
+    truncate-to: false
+    bypass-from: "something.reboot.example_rank"
+    bypass-to: "something.reboot.example_rank"
+####
 
 # Logic to run when the rank is being entered by a player
 on_enter:

@@ -4,6 +4,7 @@ import com.github.gaboss44.ecolpr.EcoLprPlugin
 import com.github.gaboss44.ecolpr.util.options
 import net.luckperms.api.cacheddata.CachedPermissionData
 import net.luckperms.api.context.ContextSet
+import net.luckperms.api.model.data.NodeMap
 import net.luckperms.api.model.user.User
 import net.luckperms.api.query.QueryOptions
 
@@ -17,6 +18,7 @@ class UserWrapper(
     val permissionData: CachedPermissionData get() = obj.cachedData.permissionData
     val queryOptions: QueryOptions get() = obj.queryOptions
     val context: ContextSet get() = queryOptions.context()
+    val data: NodeMap get() = obj.data()
 
     fun getPermissionData(options: QueryOptions): CachedPermissionData =
         obj.cachedData.getPermissionData(options)

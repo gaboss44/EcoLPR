@@ -7,6 +7,7 @@ import net.luckperms.api.query.QueryMode
 import net.luckperms.api.query.QueryOptions
 import org.bukkit.entity.Player
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
 
 class LuckPermsRepository(
     plugin: EcoLprPlugin,
@@ -26,11 +27,11 @@ class LuckPermsRepository(
     fun getUser(player: Player): UserWrapper =
         UserWrapper(plugin, adapter.getUser(player))
 
-    fun getUser(playerId: UUID): UserWrapper? =
-        obj.userManager.getUser(playerId) ?.let { UserWrapper(plugin, it) }
+    fun loadUser(uuid: UUID): CompletableFuture<UserWrapper?> =
+        obj.userManager.loadUser(uuid).thenApply { user -> user?.let { UserWrapper(plugin, user) } }
 
-    fun getUser(name: String): UserWrapper? =
-        obj.userManager.getUser(name) ?.let { UserWrapper(plugin, it) }
+    fun saveUser(user: UserWrapper): CompletableFuture<Void> =
+        obj.userManager.saveUser(user.obj)
 
     fun queryOptionsBuilder(mode: QueryMode) : QueryOptions.Builder =
         obj.contextManager.queryOptionsBuilder(mode)

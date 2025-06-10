@@ -4,7 +4,6 @@ import com.github.gaboss44.ecolpr.EcoLprPlugin
 import net.luckperms.api.context.ContextSet
 import net.luckperms.api.model.group.Group
 import net.luckperms.api.query.QueryOptions
-import java.util.UUID
 
 class GroupWrapper(
     plugin: EcoLprPlugin,
@@ -23,15 +22,6 @@ class GroupWrapper(
 
     fun hasMember(user : UserWrapper, ctx : ContextSet): Boolean =
         user.isInGroup(this, ctx)
-
-    fun hasMember(playerId: UUID): Boolean =
-        plugin.repository.getUser(playerId)?.let { this.hasMember(it) } ?: false
-
-    fun hasMember(playerId: UUID, options: QueryOptions): Boolean =
-        plugin.repository.getUser(playerId)?.let { this.hasMember(it, options) } ?: false
-
-    fun hasMember(playerId: UUID, ctx: ContextSet): Boolean =
-        plugin.repository.getUser(playerId)?.let { this.hasMember(it, ctx) } ?: false
     
     fun isInTrack(track: String): Boolean =
         plugin.repository.getTrack(track)?.contains(this) ?: false

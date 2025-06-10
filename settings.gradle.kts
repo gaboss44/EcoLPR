@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = "EcoLPR"
-include("api", "core")
+include(":api", ":core")

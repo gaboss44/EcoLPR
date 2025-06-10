@@ -1,16 +1,16 @@
 package com.github.gaboss44.ecolpr
 
+import com.github.gaboss44.ecolpr.prestige.Prestige
 import com.github.gaboss44.ecolpr.rank.Rank
-import com.github.gaboss44.ecolpr.rank.Road
+import com.github.gaboss44.ecolpr.road.Road
+import com.github.gaboss44.ecolpr.transition.RankTransitioner
 import net.luckperms.api.query.QueryOptions
-import java.util.UUID
+import org.bukkit.entity.Player
 
 interface EcoLpr {
     val defaultQueryOptions: QueryOptions
 
-    val shouldDebug: Boolean
-
-    val shouldSelectMostSpecificRoad: Boolean
+    val rankTransitioner: RankTransitioner
 
     fun getRankById(id: String): Rank?
 
@@ -20,11 +20,9 @@ interface EcoLpr {
 
     fun getRoadByIdOverride(id: String): Road?
 
-    fun searchPlayerCurrentRoads(playerId: UUID): Set<Road>
+    fun getPrestigeById(id: String): Prestige?
 
-    fun searchPlayerMostSpecificRoad(playerId: UUID): Road? =
-        searchPlayerCurrentRoads(playerId).firstOrNull()
+    fun getPrestigeByIdOverride(id: String): Prestige?
 
-    fun searchPlayerLeastSpecificRoad(playerId: UUID): Road? =
-        searchPlayerCurrentRoads(playerId).lastOrNull()
+    fun getSatisfactoryRoads(player: Player): List<Road>
 }
