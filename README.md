@@ -1,2 +1,2 @@
 # EcoLPR
-Eco &amp; Luckperms Powered RankUp Spigot Plugin Project
+Eco &amp; Luckperms Powered RankUp Minecraft Spigot Plugin Project
