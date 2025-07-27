@@ -1,14 +1,41 @@
 
-message:
+messages:
+  prefix: "&#30bcab&lEcoLPR&r &8» &r"
+  no-permission: "&cYou don't have permission to do this!"
+  not-player: "&cThis command must be run by a player"
+  invalid-command: "&cUnknown subcommand!"
+  reloaded: "%prefix% Reloaded!"
+
+  player-command-rank-help:
+    header: ""
+
+  required-road: "&cYou must specify a road"
+  invalid-road: "&cThe road %road% does not exist"
+  hidden-road: "&cThe road %road% does not exist"
+  unsatisfied-road: "&cYour current context does not satisfy the road %road_display_name%"
+  untraveled-road: "&cYou are not traveling the road %road_display_name% in your current context"
+
+  rank-promotion-successful:
+    player: "Successfully ranked up"
+    operator: "Successfully ranked up"
+
+  rank-promotion-cancelled:
+    player: "&cYour ascension was cancelled"
+    operator: "&cYour ascension was cancelled"
+
+  rank-promotion-failed:
+    player: "&cYour ascension failed"
+    operator: "&cYour ascension failed"
+
   not-in-satisfying-road:
-    player: "There is no road that satisfies your current context."
-    admin: "There is no road that satisfies the current context of player %player%."
+    player: "There is no road that isSatisfiedBy your current context."
+    operator: "There is no road that isSatisfiedBy the current context valueOf player %player%."
   illegal-road:
     player: "The current road is not applicable."
-    admin: "Tried to transition player %player% along an illegal road."
+    operator: "Tried to transition player %player% along an illegal road."
   no-ranks-in-road:
     player: "There are no ranks in this road."
-    admin: "Player %player% has no ranks in their current road."
+    operator: "Player %player% has no ranks in their current road."
   last-rank-in-road:
     player: "You are already at the last rank in this road."
-    admin: "Player %player% is already at the last rank in this road."
+    operator: "Player %player% is already at the last rank in this road."

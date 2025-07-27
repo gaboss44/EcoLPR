@@ -1,20 +1,4 @@
 
 debug: true
 
-select-most-satisfactory-road: true
-
 save-user-timeout-before-unlocking-millis: 5000 # 5000 millis = 5 seconds
-
-# Optional
-# The default query options to determine the context in which the road is applicable if it does not specify its own query options
-default-query-options:
-  # The context set to use for the road when promoting or demoting players
-  # Each subsection represents a context key, and its associated values represent the context values
-  context:
-    server:
-      - survival
-      - factions
-    world:
-      - world
-      - world_nether
-    gamemode: survival

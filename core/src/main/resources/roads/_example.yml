@@ -1,10 +1,14 @@
-# Optional 
-# - The id to look for the road's underlying luckperms track with
-# - If not specified, the filename will be used instead
-id-override: "luckperms_track1"
+
+hide: true
+hide-bypass-permission: 'permission.visible.road.example'
 
 # Optional
-# The display name of the road
+# - The id to look for the road's underlying luckperms track with
+# - If not specified, the filename will be used instead
+luckperms-name: "luckperms_track1"
+
+# Optional
+# The display name valueOf the road
 # If not specified, the filename will be used instead
 display-name: "&aExample Road 1"
 
@@ -39,37 +43,21 @@ query-options:
     # If global or non-world-specific group memberships should be applied
     apply_inheritance_nodes_without_world_context: true
 
-placeholders:
-  money: "1000"
+prestige-enabled: false
 
-prestige: 'example_prestige'
+prestige-options:
+  enforce: true
+  prestige: "_example_prestige"
+  mode: egression
+  # Mandatory when mode is set to migration
+  next-road: "_example_next_road"
 
 # Optional
 # The conditions that must be met by the player before ranking up
 conditions: [ ]
 
-pre-rank-up-effects:
+rank-up-effects:
   - effects: []
-    args:
-      from-rank: "example_rank1"
-      to-rank: "example_rank2"
-      source: natural
-      direction: up
-      # 'status' is yet to be determined at post-rank-up
-
-post-rank-up-effects:
-  - effects: []
-    args:
-      from-rank: "example_rank1"
-      to-rank: "example_rank2"
-      source: natural
-      direction: up
-      status: success
-      statuses:
-        - success
-        - failure
-        - cancelled
-        - condition_failed
-        - missing_track
-        - last_group
-        - unsatisfied_query
+    args: []
+    filters:
+      from_rank: _example
