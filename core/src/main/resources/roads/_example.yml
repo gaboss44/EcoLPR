@@ -8,8 +8,6 @@ description: "&aExample Road 1 Description"
 ranks:
   - "_example"
 
-# The context set to use for the road when promoting or demoting players
-# Each subsection represents a context key, and its associated values represent the context values
 context:
   server:
     - survival

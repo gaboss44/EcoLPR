@@ -5,11 +5,12 @@ import com.willfp.libreforge.NoCompileData
 import com.willfp.libreforge.arguments
 import com.willfp.libreforge.effects.Effect
 import com.willfp.libreforge.triggers.TriggerData
-import com.willfp.libreforge.triggers.TriggerParameter
 import org.bukkit.event.Cancellable
 
 object EffectSetCancelled : Effect<NoCompileData>("set_cancelled") {
     override val supportsDelay = false
+
+    override val isPermanent = false
 
     override val arguments = arguments {
         require("value", "You must specify a cancellation state for the result.")

@@ -21,7 +21,7 @@ abstract class PlayerTransitionCommand(
         if (!Bukkit.isPrimaryThread()) return
 
         if (plugin.asLpr().transitionManager.isLocked(player)) {
-            plugin.asLpr().langYml.sendMessage(player, "transition-locked")
+            plugin.asLpr().langYml.sendMessage(player, "transition-locked.player")
             return
         }
 
@@ -55,4 +55,14 @@ abstract class PlayerTransitionCommand(
         source: Transition.Source,
         args: List<String>
     )
+
+    override fun tabComplete(sender: Player, args: List<String>): List<String> {
+        if (args.size == 1) {
+            return Roads.values()
+                .filter { it.isVisibleFor(sender) }
+                .map { it.id }
+                .filter { it.startsWith(args[0], ignoreCase = true) }
+        }
+        return emptyList()
+    }
 }

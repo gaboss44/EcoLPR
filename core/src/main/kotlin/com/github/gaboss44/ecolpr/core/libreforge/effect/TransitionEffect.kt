@@ -16,6 +16,8 @@ abstract class TransitionEffect(
     protected val plugin: EcoLprPlugin,
     id: String
 ) : Effect<Transition.Options>(id) {
+    override val isPermanent = false
+
     override val parameters = setOf(
         TriggerParameter.PLAYER
     )

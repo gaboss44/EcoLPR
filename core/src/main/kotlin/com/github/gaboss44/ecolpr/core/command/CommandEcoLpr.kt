@@ -83,6 +83,15 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
             if (plugin.asLpr().transitionManager.isLocked(player)) {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
+                    "transition-locked.operator",
+                    PlaceholderContext(player)
+                )
+                return
+            }
+
+            if (plugin.asLpr().transitionManager.isLocked(player)) {
+                plugin.asLpr().langYml.sendMessage(
+                    sender,
                     "transition-locked",
                     PlaceholderContext(player)
                 )
@@ -125,6 +134,18 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
             source: Transition.Source,
             args: MutableList<String>
         )
+
+        override fun tabComplete(sender: CommandSender, args: MutableList<String>): List<String> {
+            if (args.size == 1) {
+                return Bukkit.getOnlinePlayers().map { it.name }
+            }
+
+            if (args.size == 2) {
+                return Roads.values().map { it.id }
+            }
+
+            return emptyList()
+        }
     }
 
     class SubcommandRankup(plugin: EcoLprPlugin) : TransitionSubcommand(
@@ -148,7 +169,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
 
             val result = call.result
 
-            if (call.wasSuccessful() && result != null) {
+            if (call.wasSuccessful() && result != null  && result.wasSuccessful()) {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "rankup-success.operator",
@@ -185,7 +206,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
 
             val result = call.result
 
-            if (call.wasSuccessful() && result != null) {
+            if (call.wasSuccessful() && result != null  && result.wasSuccessful()) {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "ingress-success.operator",
@@ -222,7 +243,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
 
             val result = call.result
 
-            if (call.wasSuccessful() && result != null) {
+            if (call.wasSuccessful() && result != null  && result.wasSuccessful()) {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "ascend-success.operator",
@@ -259,7 +280,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
 
             val result = call.result
 
-            if (call.wasSuccessful() && result != null) {
+            if (call.wasSuccessful() && result != null  && result.wasSuccessful()) {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "prestige-success.operator",
@@ -296,7 +317,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
 
             val result = call.result
 
-            if (call.wasSuccessful() && result != null) {
+            if (call.wasSuccessful() && result != null  && result.wasSuccessful()) {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "egress-success.operator",
@@ -333,7 +354,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
 
             val result = call.result
 
-            if (call.wasSuccessful() && result != null) {
+            if (call.wasSuccessful() && result != null  && result.wasSuccessful()) {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "recurse-success.operator",
@@ -370,7 +391,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
 
             val result = call.result
 
-            if (call.wasSuccessful() && result != null) {
+            if (call.wasSuccessful() && result != null  && result.wasSuccessful()) {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "migrate-success.operator",

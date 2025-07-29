@@ -55,16 +55,8 @@ allprojects {
         jar { archiveFileName.set("EcoLPR-v${version}.jar") }
 
         shadowJar {
-            // archiveBaseName.set("EcoLPR")
-            // archiveClassifier.set("")
-            // archiveVersion.set("v${project.version}")
-
             relocate("com.willfp.libreforge.loader", "com.github.gaboss44.ecolpr.core.libreforge.loader")
-            relocate("com.willfp.ecomponent", "com.github.gaboss44.ecolpr.core.ecomponent")
-
-            // mergeServiceFiles()
-
-            // minimize()
+            // relocate("com.willfp.ecomponent", "com.github.gaboss44.ecolpr.core.ecomponent")
         }
 
         compileKotlin {

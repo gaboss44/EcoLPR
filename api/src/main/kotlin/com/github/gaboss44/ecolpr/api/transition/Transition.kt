@@ -338,6 +338,7 @@ interface Transition {
                 Mode.NORMAL -> normal()
             }
 
+            @JvmStatic
             fun iterateArgs(args: Iterable<String>): Options {
                 val builder = Builder(Mode.NORMAL)
                 for (arg in args) {
@@ -356,6 +357,7 @@ interface Transition {
                 return builder.build()
             }
 
+            @JvmStatic
             fun consumeArgs(args: MutableList<String>): Options {
                 val builder = Builder(Mode.NORMAL)
 
@@ -398,6 +400,7 @@ interface Transition {
                 return builder.build()
             }
 
+            @JvmStatic
             fun parseArgs(config: Config): Options {
                 val builder = Builder(Mode.NORMAL)
 

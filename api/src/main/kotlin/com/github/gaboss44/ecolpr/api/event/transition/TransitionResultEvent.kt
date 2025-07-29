@@ -20,7 +20,5 @@ class TransitionResultEvent (
 
         @JvmStatic
         fun getHandlerList() = handlerList
-
     }
-
 }

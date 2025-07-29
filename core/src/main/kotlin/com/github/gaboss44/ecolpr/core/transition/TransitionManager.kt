@@ -66,7 +66,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
 
     private fun TransitionDto.Attempt.event(options: Transition.Options) : TransitionAttemptEvent {
         val event = TransitionAttemptEvent(plugin.api, this.proxy)
-        if (!options.areEventsEnabled()) Bukkit.getPluginManager().callEvent(event)
+        if (options.areEventsEnabled()) Bukkit.getPluginManager().callEvent(event)
         if (options.areEffectsEnabled()) road.transitionAttemptEffects?.trigger(
             DispatchedTrigger(
                 player.toDispatcher(),
@@ -82,7 +82,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
 
     private fun TransitionDto.Result.event(options: Transition.Options) : TransitionResultEvent {
         val event = TransitionResultEvent(plugin.api, this.proxy)
-        if (!options.areEventsEnabled()) Bukkit.getPluginManager().callEvent(event)
+        if (options.areEventsEnabled()) Bukkit.getPluginManager().callEvent(event)
         if (options.areEffectsEnabled()) road.transitionResultEffects?.trigger(
             DispatchedTrigger(
                 player.toDispatcher(),

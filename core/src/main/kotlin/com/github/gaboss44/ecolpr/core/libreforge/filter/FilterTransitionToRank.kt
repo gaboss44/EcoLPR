@@ -6,7 +6,6 @@ import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.util.containsIgnoreCase
 import com.willfp.libreforge.NoCompileData
 import com.willfp.libreforge.filters.Filter
-import com.willfp.libreforge.getStrings
 import com.willfp.libreforge.triggers.TriggerData
 
 object FilterTransitionToRank : Filter<NoCompileData, Collection<String>>("ecolpr_transition_to_rank") {
@@ -14,7 +13,7 @@ object FilterTransitionToRank : Filter<NoCompileData, Collection<String>>("ecolp
         config: Config,
         data: TriggerData?,
         key: String
-    ) = config.getStrings(key, key)
+    ) = config.getStrings(key)
 
     override fun isMet(
         data: TriggerData,

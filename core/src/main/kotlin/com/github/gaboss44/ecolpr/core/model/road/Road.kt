@@ -16,6 +16,7 @@ import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.data.keys.PersistentDataKey
 import com.willfp.eco.core.data.keys.PersistentDataKeyType
 import com.willfp.eco.core.data.profile
+import com.willfp.eco.util.toNumeral
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.effects.Effects
 import com.willfp.libreforge.effects.executors.impl.NormalExecutorFactory
@@ -38,6 +39,33 @@ class Road(
             add(
                 ContextualPlaceholder(
                     plugin,
+                    prefix + "_prestige_level"
+                ) { _, context ->
+                    val player = context.player ?: return@ContextualPlaceholder null
+                    getPrestigeLevel(player).toString()
+                }.register()
+            )
+            add(
+                ContextualPlaceholder(
+                    plugin,
+                    prefix + "_prestige_level_numeral"
+                ) { _, context ->
+                    val player = context.player ?: return@ContextualPlaceholder null
+                    getPrestigeLevel(player).toNumeral()
+                }.register()
+            )
+            add(
+                ContextualPlaceholder(
+                    plugin,
+                    prefix + "_current_rank"
+                ) { _, context ->
+                    val player = context.player ?: return@ContextualPlaceholder null
+                    getCurrentRank(player)?.id ?: ""
+                }.register()
+            )
+            add(
+                ContextualPlaceholder(
+                    plugin,
                     prefix + "_current_rank_display_name"
                 ) { _, context ->
                     val player = context.player ?: return@ContextualPlaceholder null
@@ -56,6 +84,15 @@ class Road(
             add(
                 ContextualPlaceholder(
                     plugin,
+                    prefix + "_prev_rank"
+                ) { _, context ->
+                    val player = context.player ?: return@ContextualPlaceholder null
+                    getPrevRank(player)?.id ?: ""
+                }.register()
+            )
+            add(
+                ContextualPlaceholder(
+                    plugin,
                     prefix + "_prev_rank_display_name"
                 ) { _, context ->
                     val player = context.player ?: return@ContextualPlaceholder null
@@ -69,6 +106,15 @@ class Road(
                 ) { _, context ->
                     val player = context.player ?: return@ContextualPlaceholder null
                     getPrevRank(player)?.getFormattedDescription(player) ?: ""
+                }.register()
+            )
+            add(
+                ContextualPlaceholder(
+                    plugin,
+                    prefix + "_next_rank"
+                ) { _, context ->
+                    val player = context.player ?: return@ContextualPlaceholder null
+                    getNextRank(player)?.id ?: ""
                 }.register()
             )
             add(
@@ -100,15 +146,15 @@ class Road(
     )
 
     val transitionAttemptEffects = Effects.compileChain(
-        config.getSubsections("transition-attempt-setEffects"),
+        config.getSubsections("transition-attempt-effects"),
         NormalExecutorFactory.create(),
-        ViolationContext(plugin,"Road $id transition attempt setEffects")
+        ViolationContext(plugin,"Road $id transition attempt effects")
     )
 
     val transitionResultEffects = Effects.compileChain(
-        config.getSubsections("transition-result-setEffects"),
+        config.getSubsections("transition-result-effects"),
         NormalExecutorFactory.create(),
-        ViolationContext(plugin,"Road $id transition result setEffects")
+        ViolationContext(plugin,"Road $id transition result effects")
     )
 
     override val name = id
@@ -151,8 +197,7 @@ class Road(
 
     fun setPrestigeLevel(player: Player, level: Int) = player.profile.write(prestigeKey, level)
 
-    override val prestigeType = config.getStringOrNull("prestige-type")
-        ?.let { PrestigeType.getByLowerValue(it) }
+    override val prestigeType = config.getStringOrNull("prestige-type")?.let { PrestigeType[it] }
 
     override val displayName = config.getString("display-name")
 

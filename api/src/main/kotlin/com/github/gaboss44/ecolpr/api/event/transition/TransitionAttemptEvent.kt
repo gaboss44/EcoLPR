@@ -17,9 +17,7 @@ class TransitionAttemptEvent (
 
     override fun isCancelled(): Boolean = cancelled
 
-    override fun setCancelled(cancel: Boolean) {
-        cancelled = cancel
-    }
+    override fun setCancelled(cancel: Boolean) { cancelled = cancel }
 
     override fun getHandlers() = handlerList
 
@@ -29,7 +27,5 @@ class TransitionAttemptEvent (
 
         @JvmStatic
         fun getHandlerList() = handlerList
-
     }
-
 }

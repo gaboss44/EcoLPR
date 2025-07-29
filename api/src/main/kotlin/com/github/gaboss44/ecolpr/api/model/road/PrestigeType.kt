@@ -12,6 +12,6 @@ enum class PrestigeType(val lowerValue: String) {
         private val byLowerValue = entries.associateBy { it.lowerValue.lowercase() }
 
         @JvmStatic
-        fun getByLowerValue(lowerValue: String) = byLowerValue[lowerValue.lowercase()]
+        operator fun get(lowerValue: String?) = lowerValue?.let { byLowerValue[it.lowercase()] }
     }
 }

@@ -6,7 +6,6 @@ import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.libreforge.ConfigWarning
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.filters.Filter
-import com.willfp.libreforge.getStrings
 import com.willfp.libreforge.triggers.TriggerData
 
 object FilterTransitionSource : Filter<Collection<Transition.Source>, Collection<String>>("ecolpr_transition_source") {
@@ -14,7 +13,7 @@ object FilterTransitionSource : Filter<Collection<Transition.Source>, Collection
         config: Config,
         data: TriggerData?,
         key: String
-    ) = config.getStrings(key, key)
+    ) = config.getStrings(key)
 
     override fun makeCompileData(
         config: Config,

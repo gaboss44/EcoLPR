@@ -22,7 +22,7 @@ class CommandPrestige(plugin: EcoLprPlugin) : PlayerTransitionCommand(
 
         val result = call.result
 
-        if (call.wasSuccessful() && result != null) {
+        if (call.wasSuccessful() && result != null && result.wasSuccessful()) {
             plugin.asLpr().langYml.sendMessage(
                 player,
                 "prestige-success.player"
