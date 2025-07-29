@@ -6,7 +6,7 @@ import com.github.gaboss44.ecolpr.core.model.road.Road
 import org.bukkit.entity.Player
 
 class EffectRecurse(plugin: EcoLprPlugin) : TransitionEffect(plugin, "ecolpr_recurse") {
-    override fun tryTransition(
+    override fun executeTransition(
         player: Player,
         road: Road,
         source: Transition.Source,

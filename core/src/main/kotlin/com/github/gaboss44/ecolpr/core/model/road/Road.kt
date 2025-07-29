@@ -6,6 +6,7 @@ import com.github.gaboss44.ecolpr.core.EcoLprPlugin
 import com.github.gaboss44.ecolpr.core.exception.InvalidConfigException
 import com.github.gaboss44.ecolpr.core.model.AbstractModel
 import com.github.gaboss44.ecolpr.core.model.rank.Ranks
+import com.github.gaboss44.ecolpr.core.util.EcoPlaceholderUtil
 import com.github.gaboss44.ecolpr.core.util.getInheritedGroups
 import com.github.gaboss44.ecolpr.core.util.nextOrNull
 import com.github.gaboss44.ecolpr.core.util.parseContextSet
@@ -31,7 +32,8 @@ class Road(
     category = "road"
 ), com.github.gaboss44.ecolpr.api.model.road.Road {
 
-    init {
+    override fun initPlaceholders() {
+        super.initPlaceholders()
         placeholders.apply {
             add(
                 ContextualPlaceholder(
@@ -98,15 +100,15 @@ class Road(
     )
 
     val transitionAttemptEffects = Effects.compileChain(
-        config.getSubsections("transition-attempt-effects"),
+        config.getSubsections("transition-attempt-setEffects"),
         NormalExecutorFactory.create(),
-        ViolationContext(plugin,"Road $id transition attempt effects")
+        ViolationContext(plugin,"Road $id transition attempt setEffects")
     )
 
     val transitionResultEffects = Effects.compileChain(
-        config.getSubsections("transition-result-effects"),
+        config.getSubsections("transition-result-setEffects"),
         NormalExecutorFactory.create(),
-        ViolationContext(plugin,"Road $id transition result effects")
+        ViolationContext(plugin,"Road $id transition result setEffects")
     )
 
     override val name = id
@@ -127,18 +129,21 @@ class Road(
     fun getCurrentRank(player: Player): Rank? {
         val ranks = this.getRanks(player)
         if (ranks.size > 1) return null
+        if (ranks.isEmpty()) return null
         return ranks[0]
     }
     
     fun getPrevRank(player: Player): Rank? {
         val ranks = this.getRanks(player)
         if (ranks.size > 1) return null
+        if (ranks.isEmpty()) return null
         return this.ranks.previousOrNull(ranks[0])
     }
     
     fun getNextRank(player: Player): Rank? {
         val ranks = this.getRanks(player)
         if (ranks.size > 1) return null
+        if (ranks.isEmpty()) return null
         return this.ranks.nextOrNull(ranks[0])
     }
 
@@ -157,12 +162,20 @@ class Road(
 
     override val hideBypassPermission = config.getStringOrNull("hide-bypass-permission")
 
-    val prestigeRoadStr = config.getStringOrNull("migration-target")
+    override val prestigeTarget = config.getStringOrNull("prestige-target")
 
-    override val prestigeRoad get() = Roads[prestigeRoadStr]
+    val prestigeRoad get() = Roads[prestigeTarget]
 
     override val contextSet = config
         .getSubsectionOrNull("context-set")
         ?. let { parseContextSet(it) }
         ?: plugin.luckperms.staticQueryOptions.context()
+
+    override fun onRegister() {
+        initPlaceholders()
+    }
+
+    override fun onRemove() {
+        EcoPlaceholderUtil.unregister(plugin, placeholders)
+    }
 }

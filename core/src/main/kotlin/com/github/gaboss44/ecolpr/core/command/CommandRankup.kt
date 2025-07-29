@@ -7,10 +7,10 @@ import com.github.gaboss44.ecolpr.core.model.road.Road
 import com.github.gaboss44.ecolpr.core.util.replacePlaceholders
 import org.bukkit.entity.Player
 
-class CommandPrestige(plugin: EcoLprPlugin) : PlayerTransitionCommand(
+class CommandRankup(plugin: EcoLprPlugin) : PlayerTransitionCommand(
     plugin,
-    "prestige",
-    "ecolpr.command.prestige"
+    "rankup",
+    "ecolpr.command.rankup"
 ) {
     override fun executeTransition(
         player: Player,
@@ -18,19 +18,19 @@ class CommandPrestige(plugin: EcoLprPlugin) : PlayerTransitionCommand(
         source: Transition.Source,
         args: List<String>
     ) {
-        val call = plugin.asLpr().transitionManager.prestige(player, road, source)
+        val call = plugin.asLpr().transitionManager.rankup(player, road, source)
 
         val result = call.result
 
         if (call.wasSuccessful() && result != null) {
             plugin.asLpr().langYml.sendMessage(
                 player,
-                "prestige-success.player"
+                "rankup-success.player"
             ) { it.replacePlaceholders(player, result) }
         } else {
             plugin.asLpr().langYml.sendMessage(
                 player,
-                "prestige-failure.player"
+                "rankup-failure.player"
             ) { it.replacePlaceholders(player, road) }
         }
     }

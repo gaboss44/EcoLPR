@@ -11,10 +11,6 @@ interface Rankup : Transition.ToRank {
     interface Call : Transition.ToRank.Call {
 
         override val result: Result?
-
-        override val status: Status
-
-        interface Status : Transition.ToRank.Call.Status
     }
 
     interface FromRank : Rankup, Transition.FromRank {
@@ -29,10 +25,6 @@ interface Rankup : Transition.ToRank {
         interface Call : Rankup.Call, Transition.FromRank.Call {
 
             override val result: Result?
-
-            override val status: Status
-
-            interface Status : Rankup.Call.Status, Transition.FromRank.Call.Status
         }
     }
 }

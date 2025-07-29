@@ -2,11 +2,11 @@ package com.github.gaboss44.ecolpr.api.model.road
 
 enum class PrestigeType(val lowerValue: String) {
 
-    EGRESS("egress"),
+    EGRESSION("egression"),
 
-    RECURSE("recurse"),
+    RECURSION("recursion"),
 
-    MIGRATE("migrate");
+    MIGRATION("migration");
 
     companion object {
         private val byLowerValue = entries.associateBy { it.lowerValue.lowercase() }

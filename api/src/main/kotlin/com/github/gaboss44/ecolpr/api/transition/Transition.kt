@@ -3,6 +3,7 @@ package com.github.gaboss44.ecolpr.api.transition
 import com.github.gaboss44.ecolpr.api.model.rank.Rank
 import com.github.gaboss44.ecolpr.api.model.road.Road
 import com.github.gaboss44.ecolpr.api.util.Data
+import com.willfp.eco.core.config.interfaces.Config
 import org.bukkit.entity.Player
 import org.jetbrains.annotations.ApiStatus
 
@@ -20,19 +21,39 @@ interface Transition {
         override val parents: List<Type> = emptyList()
     ) : Data<Type> {
 
-        RANKUP("rankup"),
+        FROM_RANK("from_rank"),
 
-        INGRESSION("ingression", RANKUP),
+        FROM_NO_RANK("from_no_rank"),
 
-        ASCENSION("ascension", RANKUP),
+        TO_RANK("to_rank"),
+
+        TO_NO_RANK("to_no_rank"),
+
+        RANKUP("rankup", TO_RANK),
+
+        RANKUP_FROM_RANK("rankup_from_rank", RANKUP, FROM_RANK),
+
+        RANKUP_FROM_NO_RANK("rankup_from_no_rank", RANKUP, FROM_NO_RANK),
 
         PRESTIGE("prestige"),
 
-        EGRESSION("egression", PRESTIGE),
+        PRESTIGE_TO_RANK("prestige_to_rank", PRESTIGE, TO_RANK),
 
-        RECURSION("recursion", PRESTIGE),
+        PRESTIGE_TO_NO_RANK("prestige_to_no_rank", PRESTIGE, TO_NO_RANK),
 
-        MIGRATION("migration", PRESTIGE);
+        PRESTIGE_WITH_TARGET("prestige_with_target", PRESTIGE_TO_RANK),
+
+        PRESTIGE_WITHOUT_TARGET("prestige_without_target", PRESTIGE),
+
+        INGRESSION("ingression", RANKUP_FROM_NO_RANK),
+
+        ASCENSION("ascension", RANKUP_FROM_RANK),
+
+        EGRESSION("egression", PRESTIGE_TO_NO_RANK, PRESTIGE_WITHOUT_TARGET),
+
+        RECURSION("recursion", PRESTIGE_TO_RANK, PRESTIGE_WITHOUT_TARGET),
+
+        MIGRATION("migration", PRESTIGE_WITH_TARGET);
 
         constructor(
             lowerValue: String,
@@ -46,7 +67,7 @@ interface Transition {
             private val byLowerValue = entries.associateBy { it.lowerValue.lowercase() }
 
             @JvmStatic
-            fun getByLowerValue(lowerValue: String) = byLowerValue[lowerValue.lowercase()]
+            operator fun get(lowerValue: String?) = lowerValue?.let { byLowerValue[it.lowercase()] }
         }
     }
 
@@ -85,7 +106,7 @@ interface Transition {
             private val byLowerValue = entries.associateBy { it.lowerValue.lowercase() }
 
             @JvmStatic
-            fun getByLowerValue(lowerValue: String) = byLowerValue[lowerValue.lowercase()]
+            operator fun get(lowerValue: String?) = lowerValue?.let { byLowerValue[it.lowercase()] }
         }
     }
 
@@ -100,14 +121,63 @@ interface Transition {
         NORMAL("normal");
 
         companion object {
+
             private val byLowerValue = entries.associateBy { it.lowerValue.lowercase() }
 
             @JvmStatic
-            fun getByLowerValue(lowerValue: String) = byLowerValue[lowerValue.lowercase()]
+            operator fun get(lowerValue: String?) = lowerValue?.let { byLowerValue[it.lowercase()] }
         }
     }
 
     interface Attempt : Transition
+
+    enum class Status(
+        val lowerValue: String,
+        var success: Boolean = false,
+        val triggerValue: Double = 0.0,
+        override val parents: List<Status> = emptyList()
+    ) : com.github.gaboss44.ecolpr.api.util.Result, Data<Status> {
+
+        SUCCESS("success", true, 1.0),
+
+        FAILURE("failure"),
+
+        CANCELLED("cancelled", FAILURE),
+
+        STALE("stale", FAILURE);
+
+        constructor(
+            lowerValue: String,
+            success: Boolean,
+            triggerValue: Double,
+            vararg parents: Status
+        ) : this(
+            lowerValue,
+            success,
+            triggerValue,
+            parents.toList()
+        )
+
+        constructor(
+            lowerValue: String,
+            vararg parents: Status
+        ) : this(
+            lowerValue,
+            false,
+            0.0,
+            parents.toList()
+        )
+
+        override fun wasSuccessful() = success
+
+        companion object {
+
+            private val byLowerValue = entries.associateBy { it.lowerValue.lowercase() }
+
+            @JvmStatic
+            operator fun get(lowerValue: String?) = lowerValue?.let { byLowerValue[it.lowercase()] }
+        }
+    }
 
     interface Result : Transition, com.github.gaboss44.ecolpr.api.util.Result {
 
@@ -117,61 +187,13 @@ interface Transition {
         val status: Status
 
         override fun wasSuccessful() = status.wasSuccessful()
-
-        enum class Status(
-            val lowerValue: String,
-            var success: Boolean = false,
-            val triggerValue: Double = 0.0,
-            override val parents: List<Status> = emptyList()
-        ) : com.github.gaboss44.ecolpr.api.util.Result, Data<Status> {
-
-            SUCCESS("success", true, 1.0),
-
-            FAILURE("failure"),
-
-            CANCELLED("cancelled", FAILURE),
-
-            STALE("stale", FAILURE);
-
-            constructor(
-                lowerValue: String,
-                success: Boolean,
-                triggerValue: Double,
-                vararg parents: Status
-            ) : this(
-                lowerValue,
-                success,
-                triggerValue,
-                parents.toList()
-            )
-
-            constructor(
-                lowerValue: String,
-                vararg parents: Status
-            ) : this(
-                lowerValue,
-                false,
-                0.0,
-                parents.toList()
-            )
-
-            override fun wasSuccessful() = success
-
-            companion object {
-
-                private val byLowerValue = entries.associateBy {
-                    it.lowerValue.lowercase()
-                }
-
-                @JvmStatic
-                fun getByLowerValue(
-                    lowerValue: String
-                ) = byLowerValue[lowerValue.lowercase()]
-            }
-        }
     }
 
     interface Call : com.github.gaboss44.ecolpr.api.util.Result {
+
+        val player: Player
+
+        val road: Road
 
         val result: Result?
 
@@ -179,11 +201,64 @@ interface Transition {
 
         override fun wasSuccessful() = this.status.wasSuccessful()
 
-        interface Status : com.github.gaboss44.ecolpr.api.util.Result {
+        enum class Status(
+            val lowerValue: String,
+            private val success: Boolean,
+            override val parents: List<Status> = emptyList()
+        ) : com.github.gaboss44.ecolpr.api.util.Result, Data<Status> {
 
-            fun isRoadEmpty() : Boolean
+            SUCCESS("success", true),
 
-            fun isAmbiguous() : Boolean
+            FAILURE("failure"),
+
+            EMPTY_ROAD("empty_road", FAILURE),
+
+            AMBIGUOUS_RANK("ambiguous_rank", FAILURE),
+
+            FROM_RANK_FAILURE("from_rank_failure", FAILURE),
+
+            NOT_ON_ROAD("not_on_road", FROM_RANK_FAILURE),
+
+            LAST_RANK("last_rank", FROM_RANK_FAILURE),
+
+            NOT_LAST_RANK("not_last_rank", FROM_RANK_FAILURE),
+
+            TO_RANK_FAILURE("to_rank_failure", FAILURE),
+
+            ALREADY_ON_ROAD("already_on_road", TO_RANK_FAILURE),
+
+            PRESTIGE_FAILURE("prestige_failure", FAILURE),
+
+            PRESTIGE_TYPE_NOT_SPECIFIED("prestige_type_not_specified", PRESTIGE_FAILURE),
+
+            PRESTIGE_WITH_TARGET_FAILURE("prestige_with_target_failure", PRESTIGE_FAILURE, TO_RANK_FAILURE),
+
+            NO_PRESTIGE_ROAD("no_prestige_road", PRESTIGE_WITH_TARGET_FAILURE),
+
+            EMPTY_PRESTIGE_ROAD("empty_prestige_road", PRESTIGE_WITH_TARGET_FAILURE),
+
+            AMBIGUOUS_PRESTIGE_RANK("ambiguous_prestige_rank", PRESTIGE_WITH_TARGET_FAILURE),
+
+            ALREADY_ON_PRESTIGE_ROAD("already_on_prestige_road", PRESTIGE_WITH_TARGET_FAILURE);
+
+            constructor(
+                lowerValue: String,
+                vararg parents: Status
+            ) : this(
+                lowerValue,
+                false,
+                parents.toList()
+            )
+
+            override fun wasSuccessful() = success
+
+            companion object {
+
+                private val byLowerValue = entries.associateBy { it.lowerValue.lowercase() }
+
+                @JvmStatic
+                operator fun get(lowerValue: String?) = lowerValue?.let { byLowerValue[it.lowercase()] }
+            }
         }
     }
 
@@ -200,14 +275,9 @@ interface Transition {
 
         interface Call : Transition.Call {
 
+            val fromRank: Rank?
+
             override val result: Result?
-
-            override val status: Status
-
-            interface Status : Transition.Call.Status {
-
-                fun isFromRankAbsent() : Boolean
-            }
         }
     }
 
@@ -224,105 +294,151 @@ interface Transition {
 
         interface Call : Transition.Call {
 
+            val toRank: Rank?
+
             override val result: Result?
-
-            override val status: Status
-
-            interface Status : Transition.Call.Status {
-
-                fun isToRankAbsent() : Boolean
-            }
         }
     }
 
-    class Options private constructor (val builder: Builder) {
+    class Options private constructor(
+        val mode: Mode,
+        private val events: Boolean,
+        private val effects: Boolean,
+        val prestigeTarget: String? = null
+    ) {
 
-        val mode = this.builder.mode
+        fun areEventsEnabled() = events
 
-        fun mode(mode: Mode) = this.builder.mode(mode).build()
+        fun areEffectsEnabled() = effects
 
-        fun silent(boolean: Boolean) = this.builder.silent(boolean).build()
-
-        fun isSilent() = this.builder.isSilent()
-
-        fun effects(boolean: Boolean) = this.builder.effects(boolean).build()
-
-        fun areEffectsEnabled() = this.builder.areEffectsEnabled()
+        fun toBuilder(): Builder = Builder(mode).apply {
+            setEvents(events)
+            setEffects(effects)
+            setPrestigeTarget(prestigeTarget)
+        }
 
         companion object {
-
-            private val FORCE = newBuilder(Mode.FORCE).build()
-
-            private val TEST = newBuilder(Mode.TEST).build()
-
-            private val NORMAL = newBuilder(Mode.NORMAL).build()
+            private val FORCE = Builder(Mode.FORCE).build()
+            private val TEST = Builder(Mode.TEST).build()
+            private val NORMAL = Builder(Mode.NORMAL).build()
 
             @JvmStatic
-            fun newBuilder(mode: Mode) : Builder = DefaultBuilder(mode)
+            fun force(): Options = FORCE
 
             @JvmStatic
-            fun force() = FORCE
+            fun test(): Options = TEST
 
             @JvmStatic
-            fun test() = TEST
+            fun normal(): Options = NORMAL
 
             @JvmStatic
-            fun normal() = NORMAL
-
-            @JvmStatic
-            fun mode(mode: Mode) = when(mode) {
+            fun mode(mode: Mode): Options = when (mode) {
                 Mode.TEST -> test()
                 Mode.FORCE -> force()
                 Mode.NORMAL -> normal()
             }
+
+            fun iterateArgs(args: Iterable<String>): Options {
+                val builder = Builder(Mode.NORMAL)
+                for (arg in args) {
+                    val str = arg.lowercase()
+                    when {
+                        str == "--test" -> builder.setMode(Mode.TEST)
+                        str == "--force" -> builder.setMode(Mode.FORCE)
+                        str == "--no-events" -> builder.setEvents(false)
+                        str == "--no-effects" -> builder.setEffects(false)
+                        str.startsWith("--prestige-target=") -> {
+                            val target = str.substringAfter("--prestige-target=", "")
+                            if (target.isNotBlank()) builder.setPrestigeTarget(target)
+                        }
+                    }
+                }
+                return builder.build()
+            }
+
+            fun consumeArgs(args: MutableList<String>): Options {
+                val builder = Builder(Mode.NORMAL)
+
+                val iterator = args.iterator()
+                while (iterator.hasNext()) {
+                    val arg = iterator.next()
+                    val str = arg.lowercase()
+
+                    when {
+                        str == "--test" -> {
+                            builder.setMode(Mode.TEST)
+                            iterator.remove()
+                        }
+
+                        str == "--force" -> {
+                            builder.setMode(Mode.FORCE)
+                            iterator.remove()
+                        }
+
+                        str == "--no-events" -> {
+                            builder.setEvents(false)
+                            iterator.remove()
+                        }
+
+                        str == "--no-effects" -> {
+                            builder.setEffects(false)
+                            iterator.remove()
+                        }
+
+                        str.startsWith("prestige-target=") -> {
+                            val target = arg.substringAfter("prestige-target=", "")
+                            if (target.isNotBlank()) {
+                                builder.setPrestigeTarget(target)
+                                iterator.remove()
+                            }
+                        }
+                    }
+                }
+
+                return builder.build()
+            }
+
+            fun parseArgs(config: Config): Options {
+                val builder = Builder(Mode.NORMAL)
+
+                Mode[config.getStringOrNull("mode")]?.let { builder.setMode(it) }
+
+                config.getBoolOrNull("events")?.let { builder.setEvents(it) }
+
+                config.getBoolOrNull("effects")?.let { builder.setEffects(it) }
+
+                config.getStringOrNull("prestige-target")
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { builder.setPrestigeTarget(it) }
+
+                return builder.build()
+            }
         }
 
-        interface Builder {
+        class Builder(
+            private var mode: Mode,
+            private var events: Boolean = true,
+            private var effects: Boolean = true,
+            private var prestigeTarget: String? = null
+        ) {
 
-            val mode: Mode
+            fun getMode() = mode
 
-            fun mode(mode: Mode) : Builder
+            fun setMode(mode: Mode) = apply { this.mode = mode }
 
-            fun silent(boolean: Boolean) : Builder
+            fun setEvents(boolean: Boolean) = apply { this.events = boolean }
 
-            fun isSilent() : Boolean
+            fun setEffects(boolean: Boolean) = apply { this.effects = boolean }
 
-            fun effects(boolean: Boolean) : Builder
+            fun setPrestigeTarget(target: String?) = apply { this.prestigeTarget = target }
 
-            fun areEffectsEnabled() : Boolean
+            fun areEventsEnabled() = events
 
-            fun build() : Options
-        }
+            fun areEffectsEnabled() = effects
 
-        private data class DefaultBuilder (
-            override val mode: Mode,
-            private val effects: Boolean = true,
-            private val silent: Boolean = false
-        ) : Builder {
+            fun getPrestigeTarget() = prestigeTarget
 
-            override fun mode(mode: Mode) = this.copy(mode)
-
-            override fun silent(boolean: Boolean) = this.copy(silent = boolean)
-
-            override fun isSilent() = silent
-
-            override fun effects(boolean: Boolean) = this.copy(effects = boolean)
-
-            override fun areEffectsEnabled() = effects
-
-            override fun build() = Options(this)
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (other === this) return true
-            if (other !is Options) return false
-            return this.builder == other.builder
-        }
-
-        override fun hashCode(): Int {
-            var result = builder.hashCode()
-            result = 31 * result + mode.hashCode()
-            return result
+            fun build() = Options(mode, events, effects, prestigeTarget)
         }
     }
 }

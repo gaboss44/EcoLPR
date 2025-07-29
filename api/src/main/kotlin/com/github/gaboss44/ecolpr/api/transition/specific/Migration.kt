@@ -19,10 +19,5 @@ interface Migration : Prestige.WithTarget {
     interface Call : Prestige.WithTarget.Call {
 
         override val result: Result?
-
-        interface Status : Prestige.WithTarget.Call.Status {
-
-            fun isAlreadyOnPrestigeRoad() : Boolean
-        }
     }
 }

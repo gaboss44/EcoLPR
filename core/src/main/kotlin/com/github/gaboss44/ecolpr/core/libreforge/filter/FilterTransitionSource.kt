@@ -21,7 +21,7 @@ object FilterTransitionSource : Filter<Collection<Transition.Source>, Collection
         context: ViolationContext,
         values: Collection<String>
     ) = values.mapNotNull { value ->
-        val source = Transition.Source.getByLowerValue(value)
+        val source = Transition.Source[value]
         if (source == null) {
             context.log(
                 ConfigWarning(

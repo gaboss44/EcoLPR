@@ -21,7 +21,7 @@ object FilterTransitionType : Filter<Collection<Transition.Type>, Collection<Str
         context: ViolationContext,
         values: Collection<String>
     ) = values.mapNotNull { value ->
-        val type = Transition.Type.getByLowerValue(value)
+        val type = Transition.Type[value]
         if (type == null) {
             context.log(
                 ConfigWarning(

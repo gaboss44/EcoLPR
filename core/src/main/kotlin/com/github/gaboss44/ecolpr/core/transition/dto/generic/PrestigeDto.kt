@@ -1,9 +1,11 @@
 package com.github.gaboss44.ecolpr.core.transition.dto.generic
 
+import com.github.gaboss44.ecolpr.api.transition.Transition
 import com.github.gaboss44.ecolpr.core.model.road.Road
 import com.github.gaboss44.ecolpr.api.transition.generic.Prestige
 import com.github.gaboss44.ecolpr.core.model.rank.Rank
 import com.github.gaboss44.ecolpr.core.transition.dto.TransitionDto
+import org.bukkit.entity.Player
 
 interface PrestigeDto : TransitionDto.FromRank, Prestige {
 
@@ -44,27 +46,6 @@ interface PrestigeDto : TransitionDto.FromRank, Prestige {
 
         override val result: Result?
 
-        override val status: Status
-
-        interface Status : TransitionDto.FromRank.Call.Status, Prestige.Call.Status {
-            object NotSpecified : Status {
-
-                override fun isRoadEmpty() = false
-
-                override fun isAmbiguous() = false
-
-                override fun wasSuccessful() = false
-
-                override fun isFromRankAbsent() = false
-
-                override fun isPrestigeTypeNotSpecified() = true
-
-                override fun isNotOnRoad() = false
-
-                override fun isNotLastRank() = false
-            }
-        }
-
         override val proxy: Api
 
         interface Api : TransitionDto.FromRank.Call.Api, Prestige.Call {
@@ -73,23 +54,24 @@ interface PrestigeDto : TransitionDto.FromRank, Prestige {
 
             override val result get() = this.handle.result?.proxy
 
-            override val status get() = this.handle.status
+            override val prestigeType get() = this.handle.prestigeType
         }
 
         companion object {
-            val NOT_SPECIFIED: Call = Impl(Status.NotSpecified)
+            fun notSpecified(player: Player, road: Road): Call = NotSpecified(player, road)
         }
 
-        private class Impl(
-            override val result: Result?,
-            override val status: Status
+        private class NotSpecified(
+            override val player: Player,
+            override val road: Road
         ) : Call {
+            override val result = null
+            override val fromRank = null
+            override val prestigeType = null
+            override val status = Transition.Call.Status.PRESTIGE_TYPE_NOT_SPECIFIED
+            override val proxy: Api = Api(this)
 
-            constructor(status: Status) : this(null, status)
-
-            override val proxy = Api(this)
-
-            class Api(override val handle: Call) : Call.Api
+            class Api(override val handle: NotSpecified) : Call.Api
         }
     }
 
@@ -132,10 +114,6 @@ interface PrestigeDto : TransitionDto.FromRank, Prestige {
 
             override val result: Result?
 
-            override val status: Status
-
-            interface Status : PrestigeDto.Call.Status, TransitionDto.ToRank.Call.Status, Prestige.ToRank.Call.Status
-
             override val proxy: Api
 
             interface Api : PrestigeDto.Call.Api, TransitionDto.ToRank.Call.Api, Prestige.ToRank.Call {
@@ -143,8 +121,6 @@ interface PrestigeDto : TransitionDto.FromRank, Prestige {
                 override val handle: Call
 
                 override val result get() = this.handle.result?.proxy
-
-                override val status get() = this.handle.status
             }
         }
     }
@@ -192,9 +168,7 @@ interface PrestigeDto : TransitionDto.FromRank, Prestige {
 
             override val result: Result?
 
-            override val status: Status
-
-            interface Status : ToRank.Call.Status, Prestige.WithTarget.Call.Status
+            override val prestigeRoad: Road?
 
             override val proxy: Api
 
@@ -204,7 +178,7 @@ interface PrestigeDto : TransitionDto.FromRank, Prestige {
 
                 override val result get() = this.handle.result?.proxy
 
-                override val status get() = this.handle.status
+                override val prestigeRoad get() = this.handle.prestigeRoad?.proxy
             }
         }
     }

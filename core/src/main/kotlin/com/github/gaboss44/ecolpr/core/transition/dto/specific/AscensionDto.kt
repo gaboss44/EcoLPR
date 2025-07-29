@@ -37,14 +37,14 @@ interface AscensionDto : RankupDto.FromRank, Ascension {
         override val fromRank: Rank,
         override val toRank: Rank,
         override val source: Transition.Source,
-        override val status: Transition.Result.Status,
+        override val status: Transition.Status,
         override val mode: Transition.Mode,
         override val attempt: Attempt?
     ) : AscensionDto, RankupDto.FromRank.Result, Ascension.Result {
 
         private constructor(
             attempt: Attempt,
-            status: Transition.Result.Status
+            status: Transition.Status
         ) : this(
             attempt.player,
             attempt.road,
@@ -62,7 +62,7 @@ interface AscensionDto : RankupDto.FromRank, Ascension {
             fromRank: Rank,
             toRank: Rank,
             source: Transition.Source,
-            status: Transition.Result.Status,
+            status: Transition.Status,
             mode: Transition.Mode
         ) : this(
             player,
@@ -93,19 +93,19 @@ interface AscensionDto : RankupDto.FromRank, Ascension {
                 attempt.fromRank,
                 attempt.toRank,
                 attempt.source,
-                Transition.Result.Status.SUCCESS,
+                Transition.Status.SUCCESS,
                 attempt.mode,
                 attempt
             )
 
             fun cancelled(attempt: Attempt) = Result(
                 attempt,
-                Transition.Result.Status.CANCELLED
+                Transition.Status.CANCELLED
             )
 
             fun stale(attempt: Attempt) = Result(
                 attempt,
-                Transition.Result.Status.STALE
+                Transition.Status.STALE
             )
 
             fun forced(
@@ -120,7 +120,7 @@ interface AscensionDto : RankupDto.FromRank, Ascension {
                 fromRank,
                 toRank,
                 source,
-                Transition.Result.Status.SUCCESS,
+                Transition.Status.SUCCESS,
                 Transition.Mode.FORCE
             )
         }
@@ -130,8 +130,6 @@ interface AscensionDto : RankupDto.FromRank, Ascension {
 
         override val result: Result?
 
-        override val status: Status
-
         override val proxy: Api
 
         interface Api : RankupDto.FromRank.Call.Api, Ascension.Call {
@@ -139,128 +137,70 @@ interface AscensionDto : RankupDto.FromRank, Ascension {
             override val handle: Call
 
             override val result get() = handle.result?.proxy
-
-            override val status get() = handle.status
-        }
-
-        interface Status : RankupDto.FromRank.Call.Status, Ascension.Call.Status {
-
-            enum class Values(
-                val success: Boolean,
-                val emptyRoad: Boolean,
-                val absentFromRank: Boolean,
-                val absentToRank: Boolean,
-                val ambiguous: Boolean,
-                val notOnRoad: Boolean,
-                val lastRank: Boolean
-            ) : Status {
-
-                Success,
-
-                EmptyRoad(
-                    emptyRoad = true,
-                    absentFromRank = true,
-                    absentToRank = true,
-                    ambiguous = false,
-                    notOnRoad = true,
-                    lastRank = false
-                ),
-
-                Ambiguous(
-                    emptyRoad = false,
-                    absentFromRank = true,
-                    absentToRank = true,
-                    ambiguous = true,
-                    notOnRoad = false,
-                    lastRank = true
-                ),
-
-                NotOnRoad(
-                    emptyRoad = false,
-                    absentFromRank = true,
-                    absentToRank = false,
-                    ambiguous = false,
-                    notOnRoad = true,
-                    lastRank = false
-                ),
-
-                LastRank(
-                    emptyRoad = false,
-                    absentFromRank = false,
-                    absentToRank = true,
-                    ambiguous = false,
-                    notOnRoad = false,
-                    lastRank = true
-                );
-
-                constructor() : this(
-                    success = true,
-                    emptyRoad = false,
-                    absentFromRank = false,
-                    absentToRank = false,
-                    ambiguous = false,
-                    notOnRoad = false,
-                    lastRank = false
-                )
-
-                constructor(
-                    emptyRoad: Boolean,
-                    absentFromRank: Boolean,
-                    absentToRank: Boolean,
-                    ambiguous: Boolean,
-                    notOnRoad: Boolean,
-                    lastRank: Boolean
-                ) : this(
-                    false,
-                    emptyRoad,
-                    absentFromRank,
-                    absentToRank,
-                    ambiguous,
-                    notOnRoad,
-                    lastRank
-                )
-
-                override fun wasSuccessful() = success
-
-                override fun isRoadEmpty() = emptyRoad
-
-                override fun isFromRankAbsent() = absentFromRank
-
-                override fun isToRankAbsent() = absentToRank
-
-                override fun isAmbiguous() = ambiguous
-
-                override fun isNotOnRoad() = notOnRoad
-
-                override fun isLastRank() = lastRank
-            }
         }
 
         companion object {
 
-            fun success(result: Result): Call = Impl(result, Status.Values.Success)
+            fun success(result: Result): Call = Impl(
+                player = result.player,
+                road = result.road,
+                fromRank = result.fromRank,
+                toRank = result.toRank,
+                result = result,
+                status = Transition.Call.Status.SUCCESS
+            )
 
-            val EMPTY_ROAD: Call = Impl(Status.Values.EmptyRoad)
+            fun emptyRoad(
+                player: Player,
+                road: Road
+            ): Call = Impl(
+                player = player,
+                road = road,
+                status = Transition.Call.Status.EMPTY_ROAD
+            )
 
-            val AMBIGUOUS: Call = Impl(Status.Values.Ambiguous)
+            fun ambiguousRank(
+                player: Player,
+                road: Road
+            ): Call = Impl(
+                player = player,
+                road = road,
+                status = Transition.Call.Status.AMBIGUOUS_RANK
+            )
 
-            val NOT_ON_ROAD: Call = Impl(Status.Values.NotOnRoad)
+            fun notOnRoad(
+                player: Player,
+                road: Road
+            ): Call = Impl(
+                player = player,
+                road = road,
+                status = Transition.Call.Status.NOT_ON_ROAD
+            )
 
-            val LAST_RANK: Call = Impl(Status.Values.LastRank)
+            fun lastRank(
+                player: Player,
+                road: Road,
+                fromRank: Rank
+            ): Call = Impl(
+                player = player,
+                road = road,
+                fromRank = fromRank,
+                status = Transition.Call.Status.LAST_RANK
+            )
         }
 
         private class Impl(
-            override val result: Result?,
-            override val status: Status
+            override val player: Player,
+            override val road: Road,
+            override val fromRank: Rank? = null,
+            override val toRank: Rank? = null,
+            override val result: Result? = null,
+            override val status: Transition.Call.Status
         ) : Call {
-
-            constructor(status: Status) : this(null, status)
 
             override val proxy = Api(this)
 
-            class Api(
-                override val handle: Call
-            ) : Call.Api
+            class Api(override val handle: Call) : Call.Api
         }
     }
 }

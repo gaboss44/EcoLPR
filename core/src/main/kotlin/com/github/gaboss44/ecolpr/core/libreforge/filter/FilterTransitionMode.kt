@@ -21,12 +21,12 @@ object FilterTransitionMode : Filter<Collection<Transition.Mode>, Collection<Str
         context: ViolationContext,
         values: Collection<String>
     ) = values.mapNotNull { value ->
-        val mode = Transition.Mode.getByLowerValue(value)
+        val mode = Transition.Mode[value]
         if (mode == null) {
             context.log(
                 ConfigWarning(
                     id,
-                    "Filter $id does not recognize mode '$value'"
+                    "Filter $id does not recognize setMode '$value'"
                 )
             )
         }

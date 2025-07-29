@@ -19,12 +19,5 @@ interface Ingression : Rankup {
     interface Call : Rankup.Call {
 
         override val result: Result?
-
-        override val status: Status
-
-        interface Status : Rankup.Call.Status {
-
-            fun isAlreadyOnRoad() : Boolean
-        }
     }
 }

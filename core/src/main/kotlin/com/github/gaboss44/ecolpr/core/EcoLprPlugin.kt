@@ -1,8 +1,9 @@
 package com.github.gaboss44.ecolpr.core
 
 import com.github.gaboss44.ecolpr.api.EcoLpr
-import com.github.gaboss44.ecolpr.core.command.OperatorCommandEcoLpr
-import com.github.gaboss44.ecolpr.core.command.PlayerCommandRankUp
+import com.github.gaboss44.ecolpr.core.command.CommandEcoLpr
+import com.github.gaboss44.ecolpr.core.command.CommandPrestige
+import com.github.gaboss44.ecolpr.core.command.CommandRankup
 import com.github.gaboss44.ecolpr.core.libreforge.condition.ConditionPlayerHasRank
 import com.github.gaboss44.ecolpr.core.libreforge.effect.EffectAscend
 import com.github.gaboss44.ecolpr.core.libreforge.effect.EffectEgress
@@ -12,13 +13,11 @@ import com.github.gaboss44.ecolpr.core.libreforge.effect.EffectPrestige
 import com.github.gaboss44.ecolpr.core.libreforge.effect.EffectRankup
 import com.github.gaboss44.ecolpr.core.libreforge.effect.EffectRecurse
 import com.github.gaboss44.ecolpr.core.libreforge.effect.EffectSetCancelled
-import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterIsTransitionFromRank
 import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterTransitionFromRank
 import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterIsCancelled
 import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterTransitionSource
-import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterTransitionResultStatus
+import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterTransitionStatus
 import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterTransitionType
-import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterIsTransitionToRank
 import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterTransitionMode
 import com.github.gaboss44.ecolpr.core.libreforge.filter.FilterTransitionToRank
 import com.github.gaboss44.ecolpr.core.libreforge.trigger.TriggerTransitionAttempt
@@ -49,8 +48,6 @@ class EcoLprPlugin : LibreforgePlugin() {
 
     init { plugin = this }
 
-    val isDebug get() = configYml.getBoolOrNull("debug") ?: false
-
     lateinit var api: EcoLpr private set
 
     lateinit var luckperms: LuckpermsRepository private set
@@ -60,7 +57,7 @@ class EcoLprPlugin : LibreforgePlugin() {
     override fun loadConfigCategories() = listOf(Ranks, Roads)
 
     override fun handleEnable() {
-        val luckperms = getLuckperms()
+        val luckperms = initLuckperms()
         if (luckperms == null) {
             Bukkit.getPluginManager().disablePlugin(this)
             throw IllegalStateException("LuckPerms is not available...")
@@ -92,12 +89,10 @@ class EcoLprPlugin : LibreforgePlugin() {
 
         Filters.register(FilterIsCancelled)
         Filters.register(FilterTransitionFromRank)
-        Filters.register(FilterIsTransitionFromRank)
         Filters.register(FilterTransitionToRank)
-        Filters.register(FilterIsTransitionToRank)
         Filters.register(FilterTransitionType)
         Filters.register(FilterTransitionSource)
-        Filters.register(FilterTransitionResultStatus)
+        Filters.register(FilterTransitionStatus)
         Filters.register(FilterTransitionMode)
     }
 
@@ -105,13 +100,13 @@ class EcoLprPlugin : LibreforgePlugin() {
 
     override fun createLangYml(): LangYml? {
         try {
-            return EcoLprLangYml(this);
+            return EcoLprLangYml(this)
         } catch (e: NullPointerException) {
             this.logger.severe("Failed to create LangYml!")
             this.logger.severe("Please make sure that the 'lang.yml' file exists this plugin's folder!")
-            e.printStackTrace();
-            Bukkit.getPluginManager().disablePlugin(this);
-            return null;
+            e.printStackTrace()
+            Bukkit.getPluginManager().disablePlugin(this)
+            return null
         }
     }
 
@@ -121,14 +116,16 @@ class EcoLprPlugin : LibreforgePlugin() {
             selfInjectPrefix()
             selfInject("placeholders")
         }
+        EcoLprSettings.setDebug(configYml.getBool("debug"))
     }
 
     override fun loadPluginCommands() = listOf(
-        OperatorCommandEcoLpr(this),
-        PlayerCommandRankUp(this)
+        CommandEcoLpr(this),
+        CommandRankup(this),
+        CommandPrestige(this)
     )
 
-    private fun getLuckperms() = Bukkit
+    private fun initLuckperms() = Bukkit
         .getServicesManager()
         .getRegistration(LuckPerms::class.java)
         ?.provider

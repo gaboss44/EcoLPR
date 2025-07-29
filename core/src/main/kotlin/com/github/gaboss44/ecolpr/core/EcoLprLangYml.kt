@@ -6,13 +6,11 @@ import com.willfp.eco.util.StringUtils
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-class EcoLprLangYml(
-    plugin: EcoLprPlugin
-) : LangYml(plugin) {
+class EcoLprLangYml(plugin: EcoLprPlugin) : LangYml(plugin) {
 
     override fun clearInjectedPlaceholders() {
         super.clearInjectedPlaceholders()
-        if (plugin.isDebug) plugin.logger.info(
+        if (EcoLprSettings.isDebug()) plugin.logger.info(
             "Cleared injected placeholders in LangYml"
         )
     }
@@ -21,7 +19,7 @@ class EcoLprLangYml(
         .get("$KEY_MESSAGES.$reference")
         ?.toString()
         ?: run {
-            if (plugin.isDebug) plugin.logger.warning(
+            if (EcoLprSettings.isDebug()) plugin.logger.warning(
                 "Could not find message with the reference key '$reference'"
             )
             return ""
@@ -32,7 +30,7 @@ class EcoLprLangYml(
         if (value is List<*>) {
             return value.filterIsInstance<String>()
         }
-        if (plugin.isDebug) plugin.logger.warning(
+        if (EcoLprSettings.isDebug()) plugin.logger.warning(
             "Could not find messages with the reference key '$reference'"
         )
         return emptyList()
@@ -212,11 +210,8 @@ class EcoLprLangYml(
         context: PlaceholderContext,
         apply: (String) -> String = { it }
     ): Boolean {
-        val message = getMessage(
-            reference,
-            context,
-            apply
-        ).also { if (it.isEmpty()) return false }
+        val message = getMessage(reference, context, apply)
+        if (message.isEmpty()) return false
         recipient.sendMessage(message)
         return true
     }
@@ -257,7 +252,7 @@ class EcoLprLangYml(
     ): Boolean {
         val messages = getMessages(reference, context, apply)
         if (messages.isEmpty()) return false
-        messages.forEach { recipient.sendMessage(it) }
+        messages.forEach { if (it.isNotEmpty()) recipient.sendMessage(it) }
         return true
     }
 }

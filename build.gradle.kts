@@ -39,7 +39,7 @@ allprojects {
     }
 
     dependencies {
-        compileOnly("com.willfp:eco:6.76.0")
+        compileOnly("com.willfp:eco:6.76.2")
         compileOnly("org.jetbrains:annotations:23.0.0")
         compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.1.0")
     }
@@ -59,8 +59,8 @@ allprojects {
             // archiveClassifier.set("")
             // archiveVersion.set("v${project.version}")
 
-            relocate("com.willfp.libreforge.loader", "com.github.gaboss44.ecolpr.libreforge.loader")
-            relocate("com.willfp.ecomponent", "com.github.gaboss44.ecolpr.ecomponent")
+            relocate("com.willfp.libreforge.loader", "com.github.gaboss44.ecolpr.core.libreforge.loader")
+            relocate("com.willfp.ecomponent", "com.github.gaboss44.ecolpr.core.ecomponent")
 
             // mergeServiceFiles()
 

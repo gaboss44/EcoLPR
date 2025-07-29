@@ -4,7 +4,6 @@ import com.github.gaboss44.ecolpr.api.transition.Transition
 import com.github.gaboss44.ecolpr.core.EcoLprPlugin
 import com.github.gaboss44.ecolpr.core.model.road.Road
 import com.github.gaboss44.ecolpr.core.model.road.Roads
-import com.github.gaboss44.ecolpr.core.util.parseTransitionOptions
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.libreforge.ViolationContext
 import com.willfp.libreforge.arguments
@@ -28,24 +27,22 @@ abstract class TransitionEffect(
     final override fun makeCompileData(
         config: Config,
         context: ViolationContext
-    ) = config.getSubsectionOrNull("options")
-        ?. let { parseTransitionOptions(it) }
-        ?: Transition.Options.normal()
+    ) = Transition.Options.parseArgs(config)
 
     override fun onTrigger(config: Config, data: TriggerData, compileData: Transition.Options): Boolean {
-        val road = Roads[config.getStringOrNull("road")] ?: return false
         val player = data.player ?: return false
+        val road = Roads[config.getStringOrNull("road")] ?: return false
         return try {
-            tryTransition(
+            executeTransition(
                 player,
                 road,
                 Transition.Source.SCRIPT,
                 compileData
             )
-        } catch (_: RuntimeException) { false }
+        } catch (_: Exception) { false }
     }
 
-    abstract fun tryTransition(
+    abstract fun executeTransition(
         player: Player,
         road: Road,
         source: Transition.Source,

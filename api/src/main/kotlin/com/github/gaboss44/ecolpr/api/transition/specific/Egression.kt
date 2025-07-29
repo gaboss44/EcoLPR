@@ -19,9 +19,5 @@ interface Egression : Prestige {
     interface Call : Prestige.Call {
 
         override val result: Result?
-
-        override val status: Status
-
-        interface Status : Prestige.Call.Status
     }
 }

@@ -19,9 +19,5 @@ interface Recursion : Prestige.ToRank {
     interface Call : Prestige.ToRank.Call {
 
         override val result: Result?
-
-        override val status: Status
-
-        interface Status : Prestige.ToRank.Call.Status
     }
 }

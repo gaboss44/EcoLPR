@@ -1,4 +1,2 @@
 
 debug: true
-
-save-user-timeout-before-unlocking-millis: 5000 # 5000 millis = 5 seconds

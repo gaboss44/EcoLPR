@@ -20,7 +20,7 @@ interface Road : Displayable, Describable {
 
     fun getPrestigeLevel(player: Player) : Int
 
-    val prestigeRoad: Road?
+    val prestigeTarget: String?
 
     val prestigeType: PrestigeType?
 
@@ -28,9 +28,7 @@ interface Road : Displayable, Describable {
 
     val hideBypassPermission: String?
 
-    fun isVisibleFor(
-        player: Player
-    ) = !isHidden || hideBypassPermission
+    fun isVisibleFor(player: Player) = !isHidden || hideBypassPermission
         ?.let { player.hasPermission(it) } ?: false
 
 }

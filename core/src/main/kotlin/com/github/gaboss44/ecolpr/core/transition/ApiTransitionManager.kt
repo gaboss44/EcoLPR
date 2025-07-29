@@ -88,17 +88,4 @@ class ApiTransitionManager(
         Transition.Source.API,
         options
     ).proxy
-
-    override fun migrate(
-        player: Player,
-        road: Road,
-        migrationTarget: Road,
-        options: Transition.Options
-    ) = this.handle.migrate(
-        player,
-        road.cast(),
-        migrationTarget.cast(),
-        Transition.Source.API,
-        options
-    ).proxy
 }

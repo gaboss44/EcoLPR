@@ -19,14 +19,5 @@ interface Ascension : Rankup.FromRank {
     interface Call : Rankup.FromRank.Call {
 
         override val result: Result?
-
-        override val status: Status
-
-        interface Status : Rankup.FromRank.Call.Status {
-
-            fun isNotOnRoad() : Boolean
-
-            fun isLastRank() : Boolean
-        }
     }
 }

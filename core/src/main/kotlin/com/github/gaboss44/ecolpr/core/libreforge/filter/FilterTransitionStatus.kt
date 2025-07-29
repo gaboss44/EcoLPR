@@ -9,7 +9,7 @@ import com.willfp.libreforge.filters.Filter
 import com.willfp.libreforge.getStrings
 import com.willfp.libreforge.triggers.TriggerData
 
-object FilterTransitionResultStatus : Filter<Collection<Transition.Result.Status>, Collection<String>>("ecolpr_transition_result_status") {
+object FilterTransitionStatus : Filter<Collection<Transition.Status>, Collection<String>>("ecolpr_transition_status") {
     override fun getValue(
         config: Config,
         data: TriggerData?,
@@ -21,7 +21,7 @@ object FilterTransitionResultStatus : Filter<Collection<Transition.Result.Status
         context: ViolationContext,
         values: Collection<String>
     ) = values.mapNotNull { value ->
-        val status = Transition.Result.Status.getByLowerValue(value)
+        val status = Transition.Status[value]
         if (status == null) {
             context.log(
                 ConfigWarning(
@@ -37,7 +37,7 @@ object FilterTransitionResultStatus : Filter<Collection<Transition.Result.Status
     override fun isMet(
         data: TriggerData,
         value: Collection<String>,
-        compileData: Collection<Transition.Result.Status>
+        compileData: Collection<Transition.Status>
     ): Boolean {
         val status = (data.event as? TransitionResultEvent)?.transition?.status ?: return false
         return compileData.any { status.inherits(it) }

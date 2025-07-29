@@ -1,6 +1,5 @@
 package com.github.gaboss44.ecolpr.core.util
 
-import com.github.gaboss44.ecolpr.api.transition.Transition
 import com.willfp.eco.core.config.base.LangYml
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.eco.core.placeholder.InjectablePlaceholder
@@ -8,12 +7,6 @@ import com.willfp.eco.core.placeholder.StaticPlaceholder
 import net.luckperms.api.context.ContextSet
 import net.luckperms.api.context.MutableContextSet
 import java.util.Collections
-
-fun parseTransitionOptions(config: Config) = Transition.Options.normal().builder.also { builder ->
-    config.getBoolOrNull("silent")?.let { builder.silent(it) }
-    config.getBoolOrNull("effects")?.let { builder.effects(it) }
-    Transition.Mode.getByLowerValue(config.getString("mode"))?.let { builder.mode(it) }
-}.build()
 
 fun Config.selfInject(key: String, keyAsPrefix: Boolean = false): List<InjectablePlaceholder> {
     val section = this.getSubsectionOrNull(key) ?: return emptyList()

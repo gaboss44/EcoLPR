@@ -1,5 +1,6 @@
 package com.github.gaboss44.ecolpr.api.transition.generic
 
+import com.github.gaboss44.ecolpr.api.model.road.PrestigeType
 import com.github.gaboss44.ecolpr.api.model.road.Road
 import com.github.gaboss44.ecolpr.api.transition.Transition
 import org.jetbrains.annotations.ApiStatus
@@ -15,18 +16,9 @@ interface Prestige : Transition.FromRank {
 
     interface Call : Transition.FromRank.Call {
 
+        val prestigeType: PrestigeType?
+
         override val result: Result?
-
-        override val status: Status
-
-        interface Status : Transition.FromRank.Call.Status {
-
-            fun isPrestigeTypeNotSpecified() : Boolean
-
-            fun isNotOnRoad() : Boolean
-
-            fun isNotLastRank() : Boolean
-        }
     }
 
     interface ToRank : Prestige, Transition.ToRank {
@@ -41,10 +33,6 @@ interface Prestige : Transition.FromRank {
         interface Call : Prestige.Call, Transition.ToRank.Call {
 
             override val result: Result?
-
-            override val status: Status
-
-            interface Status : Prestige.Call.Status, Transition.ToRank.Call.Status
         }
     }
 
@@ -61,16 +49,9 @@ interface Prestige : Transition.FromRank {
 
         interface Call : ToRank.Call {
 
+            val prestigeRoad: Road?
+
             override val result: Result?
-
-            override val status: Status
-
-            interface Status : ToRank.Call.Status {
-
-                fun isPrestigeRoadAbsent() : Boolean
-
-                fun isPrestigeRoadEmpty() : Boolean
-            }
         }
     }
 }

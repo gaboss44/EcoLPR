@@ -54,7 +54,7 @@ interface TransitionManager {
 
     fun prestige(player: Player, road: Road, options: Transition.Options): Prestige.Call
 
-    // RECURSE
+    // RECURSION
 
     fun recurse(player: Player, road: Road): Recursion.Call =
         recurse(player, road, Transition.Options.normal())
@@ -64,7 +64,7 @@ interface TransitionManager {
 
     fun recurse(player: Player, road: Road, options: Transition.Options): Recursion.Call
 
-    // EGRESS
+    // EGRESSION
 
     fun egress(player: Player, road: Road): Egression.Call =
         egress(player, road, Transition.Options.normal())
@@ -74,7 +74,7 @@ interface TransitionManager {
 
     fun egress(player: Player, road: Road, options: Transition.Options): Egression.Call
 
-    // MIGRATE
+    // MIGRATION
 
     fun migrate(player: Player, road: Road): Migration.Call =
         migrate(player, road, Transition.Options.normal())
@@ -83,12 +83,4 @@ interface TransitionManager {
         migrate(player, road, Transition.Options.mode(mode))
 
     fun migrate(player: Player, road: Road, options: Transition.Options): Migration.Call
-
-    fun migrate(player: Player, road: Road, migrationTarget: Road): Migration.Call =
-        migrate(player, road, migrationTarget, Transition.Options.normal())
-
-    fun migrate(player: Player, road: Road, migrationTarget: Road, mode: Transition.Mode): Migration.Call =
-        migrate(player, road, migrationTarget, Transition.Options.mode(mode))
-
-    fun migrate(player: Player, road: Road, migrationTarget: Road, options: Transition.Options): Migration.Call
 }

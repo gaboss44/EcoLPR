@@ -4,6 +4,7 @@ import com.github.gaboss44.ecolpr.api.transition.Transition
 import com.github.gaboss44.ecolpr.api.transition.generic.Prestige
 import com.github.gaboss44.ecolpr.api.model.rank.Rank
 import com.github.gaboss44.ecolpr.api.model.road.Road
+import com.willfp.eco.util.toNiceString
 import com.willfp.libreforge.NamedValue
 import org.bukkit.entity.Player
 
@@ -148,59 +149,139 @@ fun Transition.namedValues(player: Player? = null) : List<NamedValue> {
     return list.toList()
 }
 
-fun Rank.replacePlaceholders(
+fun String.replacePlaceholders(
     player: Player? = null,
-    string: String
+    rank: Rank,
 ): String {
-    return string
-        .replace("%rank%", name)
-        .replace("%rank_description%", player?.let { getFormattedDescription(it) } ?: formattedDescription)
-        .replace("%rank_display_name%", player?.let { getFormattedDisplayName(it) } ?: formattedDisplayName)
+    return this
+        .replace(
+            "%rank%",
+            rank.name
+        )
+        .replace(
+            "%rank_description%",
+            player?.let {
+                rank.getFormattedDescription(it)
+            } ?: rank.formattedDescription
+        )
+        .replace(
+            "%rank_display_name%",
+            player?.let {
+                rank.getFormattedDisplayName(it)
+            } ?: rank.formattedDisplayName)
 }
 
-fun Road.replacePlaceholders(
+fun String.replacePlaceholders(
     player: Player? = null,
-    string: String
+    road: Road
 ): String {
-    return string
-        .replace("%road%", name)
-        .replace("%road_description%", player?.let { getFormattedDescription(it) } ?: formattedDescription)
-        .replace("%road_display_name%", player?.let { getFormattedDisplayName(it) } ?: formattedDisplayName)
+    return this
+        .replace(
+            "%road%",
+            road.name
+        )
+        .replace(
+            "%road_description%",
+            player?.let {
+                road.getFormattedDescription(it)
+            } ?: road.formattedDescription
+        )
+        .replace(
+            "%road_display_name%",
+            player?.let {
+                road.getFormattedDisplayName(it)
+            } ?: road.formattedDisplayName
+        )
 }
 
-fun Transition.replacePlaceholders(
+fun String.replacePlaceholders(
     player: Player? = null,
-    string: String
+    transition: Transition
 ): String {
-    var replaced = string
-        .replace("%road%", road.name)
-        .replace("%road_description%", player?.let { road.getFormattedDescription(it) } ?: road.formattedDescription)
-        .replace("%road_display_name%", player?.let { road.getFormattedDisplayName(it) } ?: road.formattedDisplayName)
+    var replaced = this
+        .replace(
+            "%road%",
+            transition.road.name
+        )
+        .replace(
+            "%road_description%",
+            player?.let {
+                transition.road.getFormattedDescription(it)
+            } ?: transition.road.formattedDescription
+        )
+        .replace(
+            "%road_display_name%",
+            player?.let {
+                transition.road.getFormattedDisplayName(it)
+            } ?: transition.road.formattedDisplayName
+        )
 
-    if (this is Transition.ToRank) {
+    if (transition is Transition.ToRank) {
         replaced = replaced
-            .replace("%to_rank%", toRank.name)
-            .replace("%to_rank_description%", player?.let { toRank.getFormattedDescription(it) } ?: toRank.formattedDescription)
-            .replace("%to_rank_display_name%", player?.let { toRank.getFormattedDisplayName(it) } ?: toRank.formattedDisplayName)
+            .replace(
+                "%to_rank%",
+                transition.toRank.name
+            )
+            .replace(
+                "%to_rank_description%",
+                player?.let {
+                    transition.toRank.getFormattedDescription(it)
+                } ?: transition.toRank.formattedDescription
+            )
+            .replace(
+                "%to_rank_display_name%",
+                player?.let {
+                    transition.toRank.getFormattedDisplayName(it)
+                } ?: transition.toRank.formattedDisplayName
+            )
     }
 
-    if (this is Transition.FromRank) {
+    if (transition is Transition.FromRank) {
         replaced = replaced
-            .replace("%from_rank%", fromRank.name)
-            .replace("%from_rank_description%", player?.let { fromRank.getFormattedDescription(it) } ?: fromRank.formattedDescription)
-            .replace("%from_rank_display_name%", player?.let { fromRank.getFormattedDisplayName(it) } ?: fromRank.formattedDisplayName)
+            .replace(
+                "%from_rank%",
+                transition.fromRank.name
+            )
+            .replace(
+                "%from_rank_description%",
+                player?.let {
+                    transition.fromRank.getFormattedDescription(it)
+                } ?: transition.fromRank.formattedDescription
+            )
+            .replace(
+                "%from_rank_display_name%",
+                player?.let {
+                    transition.fromRank.getFormattedDisplayName(it)
+                } ?: transition.fromRank.formattedDisplayName
+            )
     }
 
-    if (this is Prestige) {
+    if (transition is Prestige) {
         replaced = replaced
-            .replace("%prestige_level%", prestigeLevel.toString())
+            .replace(
+                "%prestige_level%",
+                transition.prestigeLevel.toNiceString()
+            )
     }
 
-    if (this is Prestige.WithTarget) {
+    if (transition is Prestige.WithTarget) {
         replaced = replaced
-            .replace("%prestige_road%", prestigeRoad.name)
-            .replace("%prestige_road_description%", player?.let { prestigeRoad.getFormattedDescription(it) } ?: prestigeRoad.formattedDescription)
-            .replace("%prestige_road_display_name%", player?.let { prestigeRoad.getFormattedDisplayName(it) } ?: prestigeRoad.formattedDisplayName)
+            .replace(
+                "%prestige_road%",
+                transition.prestigeRoad.name
+            )
+            .replace(
+                "%prestige_road_description%",
+                player?.let {
+                    transition.prestigeRoad.getFormattedDescription(it)
+                } ?: transition.prestigeRoad.formattedDescription
+            )
+            .replace(
+                "%prestige_road_display_name%",
+                player?.let {
+                    transition.prestigeRoad.getFormattedDisplayName(it)
+                } ?: transition.prestigeRoad.formattedDisplayName
+            )
     }
 
     return replaced

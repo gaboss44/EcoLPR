@@ -5,8 +5,8 @@ import com.willfp.eco.core.placeholder.Placeholder
 import java.util.regex.Pattern
 
 abstract class AbstractPlaceholder(
-    var plugin: EcoPlugin,
-    var pattern: Pattern
+    private var plugin: EcoPlugin,
+    private var pattern: Pattern
 ) : Placeholder {
 
     override fun getPlugin() = plugin

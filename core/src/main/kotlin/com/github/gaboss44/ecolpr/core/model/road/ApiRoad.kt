@@ -8,7 +8,5 @@ class ApiRoad(
 
     override val ranks get() = this.handle.ranks.map { it.proxy }
 
-    override val prestigeRoad get() = this.handle.prestigeRoad?.proxy
-
     override fun getRanks(player: Player) = this.handle.getRanks(player).map { it.proxy }
 }

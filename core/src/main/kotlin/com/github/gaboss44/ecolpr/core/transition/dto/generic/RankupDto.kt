@@ -1,7 +1,11 @@
 package com.github.gaboss44.ecolpr.core.transition.dto.generic
 
+import com.github.gaboss44.ecolpr.api.transition.Transition
 import com.github.gaboss44.ecolpr.api.transition.generic.Rankup
+import com.github.gaboss44.ecolpr.core.model.rank.Rank
+import com.github.gaboss44.ecolpr.core.model.road.Road
 import com.github.gaboss44.ecolpr.core.transition.dto.TransitionDto
+import org.bukkit.entity.Player
 
 interface RankupDto : TransitionDto.ToRank, Rankup {
 
@@ -39,87 +43,56 @@ interface RankupDto : TransitionDto.ToRank, Rankup {
     interface Call : TransitionDto.ToRank.Call, Rankup.Call {
 
         override val result: Result?
-        override val status: Status
         override val proxy: Api
 
         interface Api : TransitionDto.ToRank.Call.Api, Rankup.Call {
             override val handle: Call
             override val result get() = handle.result?.proxy
-            override val status get() = handle.status
-        }
-
-        interface Status : TransitionDto.ToRank.Call.Status, Rankup.Call.Status {
-
-            enum class Values(
-                val success: Boolean,
-                val emptyRoad: Boolean,
-                val absentToRank: Boolean,
-                val ambiguous: Boolean
-            ) : Status {
-
-                Success,
-
-                EmptyRoad(
-                    emptyRoad = true,
-                    absentToRank = true,
-                    ambiguous = false
-                ),
-
-                Ambiguous(
-                    emptyRoad = false,
-                    absentToRank = true,
-                    ambiguous = true
-                );
-
-                constructor() : this(
-                    success = true,
-                    emptyRoad = false,
-                    absentToRank = false,
-                    ambiguous = false
-                )
-
-                constructor(
-                    emptyRoad: Boolean,
-                    absentToRank: Boolean,
-                    ambiguous: Boolean
-                ) : this(
-                    success = false,
-                    emptyRoad = emptyRoad,
-                    absentToRank = absentToRank,
-                    ambiguous = ambiguous
-                )
-
-                override fun wasSuccessful() = success
-
-                override fun isRoadEmpty() = emptyRoad
-
-                override fun isToRankAbsent() = absentToRank
-
-                override fun isAmbiguous() = ambiguous
-            }
         }
 
         companion object {
 
-            fun success(result: Result): Call = Impl(result, Status.Values.Success)
+            fun success(
+                player: Player,
+                road: Road,
+                result: Result
+            ): Call = Impl(
+                player = player,
+                road = road,
+                result = result,
+                status = Transition.Call.Status.SUCCESS
+            )
 
-            val EMPTY_ROAD: Call = Impl(Status.Values.EmptyRoad)
+            fun emptyRoad(
+                player: Player,
+                road: Road
+            ): Call = Impl(
+                player = player,
+                road = road,
+                status = Transition.Call.Status.EMPTY_ROAD
+            )
 
-            val AMBIGUOUS: Call = Impl(Status.Values.Ambiguous)
+            fun ambiguousRank(
+                player: Player,
+                road: Road
+            ): Call = Impl(
+                player = player,
+                road = road,
+                status = Transition.Call.Status.AMBIGUOUS_RANK
+            )
         }
 
         private class Impl(
-            override val result: Result?,
-            override val status: Status
+            override val player: Player,
+            override val road: Road,
+            override val toRank: Rank? = null,
+            override val result: Result? = null,
+            override val status: Transition.Call.Status
         ) : Call {
-
-            constructor(status: Status) : this(null, status)
 
             override val proxy = Api(this)
 
-            class Api(
-                override val handle: Call
-            ) : Call.Api
+            class Api(override val handle: Call) : Call.Api
         }
     }
 
@@ -160,10 +133,6 @@ interface RankupDto : TransitionDto.ToRank, Rankup {
 
             override val result: Result?
 
-            override val status: Status
-
-            interface Status : RankupDto.Call.Status, TransitionDto.FromRank.Call.Status, Rankup.FromRank.Call.Status
-
             override val proxy: Api
 
             interface Api : RankupDto.Call.Api, TransitionDto.FromRank.Call.Api, Rankup.FromRank.Call {
@@ -171,8 +140,6 @@ interface RankupDto : TransitionDto.ToRank, Rankup {
                 override val handle: Call
 
                 override val result get() = this.handle.result?.proxy
-
-                override val status get() = this.handle.status
             }
         }
     }

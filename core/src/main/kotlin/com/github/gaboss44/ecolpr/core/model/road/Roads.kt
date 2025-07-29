@@ -1,6 +1,7 @@
 package com.github.gaboss44.ecolpr.core.model.road
 
 import com.github.gaboss44.ecolpr.core.EcoLprPlugin
+import com.github.gaboss44.ecolpr.core.EcoLprSettings
 import com.github.gaboss44.ecolpr.core.exception.InvalidConfigException
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.libreforge.loader.LibreforgePlugin
@@ -22,7 +23,7 @@ object Roads : RegistrableCategory<Road>("road", "roads") {
                 is IllegalArgumentException -> plugin.logger.warning("Failed to load road '$id': ${e.message}")
                 else -> {
                     plugin.logger.severe("An unexpected error occurred while loading road '$id': ${e.message}")
-                    if (plugin.isDebug) e.printStackTrace()
+                    if (EcoLprSettings.isDebug()) e.printStackTrace()
                 }
             }
         }

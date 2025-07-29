@@ -1,41 +1,74 @@
 
 messages:
-  prefix: "&#30bcab&lEcoLPR&r &8» &r"
+  prefix: "&#30bcab&lEcoLPR&r &8»&r"
   no-permission: "&cYou don't have permission to do this!"
   not-player: "&cThis command must be run by a player"
   invalid-command: "&cUnknown subcommand!"
   reloaded: "%prefix% Reloaded!"
 
-  player-command-rank-help:
-    header: ""
-
   required-road: "&cYou must specify a road"
   invalid-road: "&cThe road %road% does not exist"
   hidden-road: "&cThe road %road% does not exist"
-  unsatisfied-road: "&cYour current context does not satisfy the road %road_display_name%"
-  untraveled-road: "&cYou are not traveling the road %road_display_name% in your current context"
 
-  rank-promotion-successful:
-    player: "Successfully ranked up"
-    operator: "Successfully ranked up"
+  required-player: "&cYou must specify a player"
+  invalid-player: "&cPlayer %player% not found"
 
-  rank-promotion-cancelled:
-    player: "&cYour ascension was cancelled"
-    operator: "&cYour ascension was cancelled"
+  transition-locked:
+    player: "%prefix% You cannot transition on %road% because you are locked"
+    operator: "%prefix% Player %player% cannot transition to %road% they are locked"
 
-  rank-promotion-failed:
-    player: "&cYour ascension failed"
-    operator: "&cYour ascension failed"
+  rankup-success:
+    player: "%prefix% You have successfully ranked up on road %road% to rank %to_rank%"
+    operator: "%prefix% Player %player% has successfully ranked up on road %road% to %to_rank%"
 
-  not-in-satisfying-road:
-    player: "There is no road that isSatisfiedBy your current context."
-    operator: "There is no road that isSatisfiedBy the current context valueOf player %player%."
-  illegal-road:
-    player: "The current road is not applicable."
-    operator: "Tried to transition player %player% along an illegal road."
-  no-ranks-in-road:
-    player: "There are no ranks in this road."
-    operator: "Player %player% has no ranks in their current road."
-  last-rank-in-road:
-    player: "You are already at the last rank in this road."
-    operator: "Player %player% is already at the last rank in this road."
+  rankup-failure:
+    player: "%prefix% You couldn't rank up on road %road%"
+    operator: "%prefix% Player %player% couldn't rank up on road %road%"
+
+  ingress-success:
+    player: "%prefix% You have successfully ingressed to %road% with rank %to_rank%"
+    operator: "%prefix% Player %player% has successfully ingressed to %road% with rank %to_rank%"
+
+  ingress-failure:
+    player: "%prefix% You couldn't ingress to %road%"
+    operator: "%prefix% Player %player% couldn't ingress to %road%"
+
+  ascend-success:
+    player: "%prefix% You have successfully ascended on %road% from rank %from_rank% to %to_rank%"
+    operator: "%prefix% Player %player% has successfully ascended on %road% from rank %from_rank% to %to_rank%"
+
+  ascend-failure:
+    player: "%prefix% You couldn't ascend to %road%"
+    operator: "%prefix% Player %player% couldn't ascend to %road%"
+
+  prestige-success:
+    player: "%prefix% You have successfully prestiged from %road% with rank %from_rank%"
+    operator: "%prefix% Player %player% has successfully prestiged from %road% with rank %from_rank%"
+
+  prestige-failure:
+    player: "%prefix% You couldn't prestige from %road%"
+    operator: "%prefix% Player %player% couldn't prestige from %road%"
+
+  egress-success:
+    player: "%prefix% You have successfully egressed from %road% with rank %from_rank%"
+    operator: "%prefix% Player %player% has successfully egressed from %road% with rank %from_rank%"
+
+  egress-failure:
+    player: "%prefix% You couldn't egress from %road%"
+    operator: "%prefix% Player %player% couldn't egress from %road%"
+    
+  recurse-success:
+    player: "%prefix% You have successfully recursed on %road% from rank %from_rank% to %to_rank%"
+    operator: "%prefix% Player %player% has successfully recursed to %road% with rank %to_rank%"
+
+  recurse-failure:
+    player: "%prefix% You couldn't recurse on %road%"
+    operator: "%prefix% Player %player% couldn't recurse on %road%"
+
+  migrate-success:
+    player: "%prefix% You have successfully migrated from %road% with rank %from_rank% to %prestige_road% with rank %to_rank%"
+    operator: "%prefix% Player %player% has successfully migrated to %road% with rank %to_rank%"
+
+  migrate-failure:
+    player: "%prefix% You couldn't migrate from %road%"
+    operator: "%prefix% Player %player% couldn't migrate from %road%"

@@ -2,62 +2,27 @@
 hide: true
 hide-bypass-permission: 'permission.visible.road.example'
 
-# Optional
-# - The id to look for the road's underlying luckperms track with
-# - If not specified, the filename will be used instead
-luckperms-name: "luckperms_track1"
+display-name: "&aExample Road 1 Display Name"
+description: "&aExample Road 1 Description"
 
-# Optional
-# The display name valueOf the road
-# If not specified, the filename will be used instead
-display-name: "&aExample Road 1"
+ranks:
+  - "_example"
 
-# Optional
-# The query options to determine the context in which the road is applicable
-# If not specified, the road will be applicable in a global context
-query-options:
-  # The context set to use for the road when promoting or demoting players
-  # Each subsection represents a context key, and its associated values represent the context values
-  context:
-    server:
-      - survival
-      - factions
-    world:
-      - world
-      - world_nether
-    gamemode: survival
+# The context set to use for the road when promoting or demoting players
+# Each subsection represents a context key, and its associated values represent the context values
+context:
+  server:
+    - survival
+    - factions
+  world:
+    - world
+    - world_nether
+  gamemode: survival
 
-  # Optional
-  # The flags to apply to the query options
-  # Any flag defaults to true if not declared here
-  # The following descriptions are extracted from LuckPerms documentation
-  flags:
-    # If parent groups should be resolved
-    resolve_inheritance: true
-    # If global or non-server-specific nodes should be applied
-    include_nodes_without_server_context: true
-    # If global or non-world-specific nodes should be applied
-    include_nodes_without_world_context: true
-    # If global or non-server-specific group memberships should be applied
-    apply_inheritance_nodes_without_server_context: true
-    # If global or non-world-specific group memberships should be applied
-    apply_inheritance_nodes_without_world_context: true
+prestige-type: egress
 
-prestige-enabled: false
+prestige-target: "some_road"
 
-prestige-options:
-  enforce: true
-  prestige: "_example_prestige"
-  mode: egression
-  # Mandatory when mode is set to migration
-  next-road: "_example_next_road"
+transition_attempt_effects: []
 
-# Optional
-# The conditions that must be met by the player before ranking up
-conditions: [ ]
-
-rank-up-effects:
-  - effects: []
-    args: []
-    filters:
-      from_rank: _example
+transition_result_effects: []

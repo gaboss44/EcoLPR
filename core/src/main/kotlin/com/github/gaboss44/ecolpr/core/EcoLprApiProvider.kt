@@ -5,9 +5,7 @@ import com.github.gaboss44.ecolpr.core.model.rank.ApiRankManager
 import com.github.gaboss44.ecolpr.core.model.road.ApiRoadManager
 import com.github.gaboss44.ecolpr.core.transition.ApiTransitionManager
 
-class EcoLprApiProvider(
-    plugin: EcoLprPlugin
-) : EcoLpr {
+class EcoLprApiProvider(plugin: EcoLprPlugin) : EcoLpr {
 
     override val rankManager = ApiRankManager()
 

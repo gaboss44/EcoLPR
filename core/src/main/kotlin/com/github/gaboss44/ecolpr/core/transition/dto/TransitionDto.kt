@@ -51,11 +51,9 @@ interface TransitionDto : Transition {
 
     interface Call : Transition.Call {
 
+        override val road: Road
+
         override val result: Result?
-
-        override val status: Status
-
-        interface Status : Transition.Call.Status
 
         val proxy: Api
 
@@ -64,6 +62,10 @@ interface TransitionDto : Transition {
             val handle: Call
 
             override val result get() = this.handle.result?.proxy
+
+            override val player get() = this.handle.player
+
+            override val road get() = this.handle.road.proxy
 
             override val status get() = this.handle.status
         }
@@ -110,9 +112,7 @@ interface TransitionDto : Transition {
 
             override val result: Result?
 
-            override val status: Status
-
-            interface Status : TransitionDto.Call.Status, Transition.FromRank.Call.Status
+            override val fromRank: Rank?
 
             override val proxy: Api
 
@@ -122,7 +122,7 @@ interface TransitionDto : Transition {
 
                 override val result get() = this.handle.result?.proxy
 
-                override val status get() = this.handle.status
+                override val fromRank get() = this.handle.fromRank?.proxy
             }
         }
     }
@@ -168,9 +168,7 @@ interface TransitionDto : Transition {
 
             override val result: Result?
 
-            override val status: Status
-
-            interface Status : TransitionDto.Call.Status, Transition.ToRank.Call.Status
+            override val toRank: Rank?
 
             override val proxy: Api
 
@@ -180,7 +178,7 @@ interface TransitionDto : Transition {
 
                 override val result get() = this.handle.result?.proxy
 
-                override val status get() = this.handle.status
+                override val toRank get() = this.handle.toRank?.proxy
             }
         }
     }

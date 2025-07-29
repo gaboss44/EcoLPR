@@ -1,5 +1,6 @@
 package com.github.gaboss44.ecolpr.core.transition.dto.specific
 
+import com.github.gaboss44.ecolpr.api.model.road.PrestigeType
 import com.github.gaboss44.ecolpr.api.transition.Transition
 import com.github.gaboss44.ecolpr.api.transition.specific.Migration
 import com.github.gaboss44.ecolpr.core.model.rank.Rank
@@ -38,26 +39,23 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
     class Result private constructor(
         override val player: Player,
         override val road: Road,
-        override val prestigeRoad: Road,
         override val fromRank: Rank,
         override val toRank: Rank,
         override val prestigeLevel: Int,
+        override val prestigeRoad: Road,
         override val source: Transition.Source,
-        override val status: Transition.Result.Status,
+        override val status: Transition.Status,
         override val mode: Transition.Mode,
         override val attempt: Attempt?
-    ) : MigrationDto, PrestigeDto.ToRank.Result, Migration.Result {
+    ) : MigrationDto, PrestigeDto.WithTarget.Result, Migration.Result {
 
-        private constructor(
-            attempt: Attempt,
-            status: Transition.Result.Status
-        ) : this(
+        private constructor(attempt: Attempt, status: Transition.Status) : this(
             attempt.player,
             attempt.road,
-            attempt.prestigeRoad,
             attempt.fromRank,
             attempt.toRank,
             attempt.prestigeLevel,
+            attempt.prestigeRoad,
             attempt.source,
             status,
             attempt.mode,
@@ -72,15 +70,15 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
             toRank: Rank,
             prestigeLevel: Int,
             source: Transition.Source,
-            status: Transition.Result.Status,
+            status: Transition.Status,
             mode: Transition.Mode
         ) : this(
             player,
             road,
-            prestigeRoad,
             fromRank,
             toRank,
             prestigeLevel,
+            prestigeRoad,
             source,
             status,
             mode,
@@ -91,17 +89,17 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
 
         class Api(
             override val handle: Result
-        ) : MigrationDto.Api, PrestigeDto.ToRank.Result.Api, Migration.Result {
+        ) : MigrationDto.Api, PrestigeDto.WithTarget.Result.Api, Migration.Result {
             override val attempt get() = handle.attempt?.proxy
         }
 
         companion object {
 
-            fun success(attempt: Attempt) = Result(attempt, Transition.Result.Status.SUCCESS)
+            fun success(attempt: Attempt) = Result(attempt, Transition.Status.SUCCESS)
 
-            fun cancelled(attempt: Attempt) = Result(attempt, Transition.Result.Status.CANCELLED)
+            fun cancelled(attempt: Attempt) = Result(attempt, Transition.Status.CANCELLED)
 
-            fun stale(attempt: Attempt) = Result(attempt, Transition.Result.Status.STALE)
+            fun stale(attempt: Attempt) = Result(attempt, Transition.Status.STALE)
 
             fun forced(
                 player: Player,
@@ -119,209 +117,137 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
                 toRank,
                 prestigeLevel,
                 source,
-                Transition.Result.Status.SUCCESS,
+                Transition.Status.SUCCESS,
                 Transition.Mode.FORCE
             )
         }
     }
 
-    interface Call : PrestigeDto.Call, Migration.Call {
+    interface Call : PrestigeDto.WithTarget.Call, Migration.Call {
 
         override val result: Result?
 
-        override val status: Status
+        override val prestigeType get() = PrestigeType.MIGRATION
 
         override val proxy: Api
 
-        interface Api : PrestigeDto.Call.Api, Migration.Call {
+        interface Api : PrestigeDto.WithTarget.Call.Api, Migration.Call {
+
             override val handle: Call
 
             override val result get() = handle.result?.proxy
-
-            override val status get() = handle.status
-        }
-
-        interface Status : PrestigeDto.Call.Status, Migration.Call.Status {
-            enum class Values(
-                val success: Boolean,
-                val emptyRoad: Boolean,
-                val ambiguous: Boolean,
-                val absentFromRank: Boolean,
-                val absentToRank: Boolean,
-                val notOnRoad: Boolean,
-                val notLastRank: Boolean,
-                val absentPrestigeRoad: Boolean,
-                val emptyPrestigeRoad: Boolean,
-                val alreadyOnPrestigeRoad: Boolean
-            ) : Status {
-
-                Success(
-                    success = true,
-                    emptyRoad = false,
-                    ambiguous = false,
-                    absentFromRank = false,
-                    absentToRank = false,
-                    notOnRoad = false,
-                    notLastRank = false,
-                    absentPrestigeRoad = false,
-                    emptyPrestigeRoad = false,
-                    alreadyOnPrestigeRoad = false
-                ),
-
-                EmptyRoad(
-                    emptyRoad = true,
-                    ambiguous = false,
-                    absentFromRank = true,
-                    absentToRank = true,
-                    notOnRoad = true,
-                    notLastRank = true,
-                    absentPrestigeRoad = false,
-                    emptyPrestigeRoad = false,
-                    alreadyOnPrestigeRoad = false
-                ),
-
-                Ambiguous(
-                    emptyRoad = false,
-                    ambiguous = true,
-                    absentFromRank = true,
-                    absentToRank = true,
-                    notOnRoad = false,
-                    notLastRank = true,
-                    absentPrestigeRoad = false,
-                    emptyPrestigeRoad = false,
-                    alreadyOnPrestigeRoad = false
-                ),
-
-                NotOnRoad(
-                    emptyRoad = false,
-                    ambiguous = false,
-                    absentFromRank = true,
-                    absentToRank = true,
-                    notOnRoad = true,
-                    notLastRank = false,
-                    absentPrestigeRoad = false,
-                    emptyPrestigeRoad = false,
-                    alreadyOnPrestigeRoad = false
-                ),
-
-                NotLastRank(
-                    emptyRoad = false,
-                    ambiguous = false,
-                    absentFromRank = false,
-                    absentToRank = false,
-                    notOnRoad = false,
-                    notLastRank = true,
-                    absentPrestigeRoad = false,
-                    emptyPrestigeRoad = false,
-                    alreadyOnPrestigeRoad = false
-                ),
-
-                AbsentPrestigeRoad(
-                    emptyRoad = false,
-                    ambiguous = false,
-                    absentFromRank = false,
-                    absentToRank = false,
-                    notOnRoad = false,
-                    notLastRank = false,
-                    absentPrestigeRoad = true,
-                    emptyPrestigeRoad = false,
-                    alreadyOnPrestigeRoad = false
-                ),
-
-                EmptyPrestigeRoad(
-                    emptyRoad = false,
-                    ambiguous = false,
-                    absentFromRank = false,
-                    absentToRank = false,
-                    notOnRoad = false,
-                    notLastRank = false,
-                    absentPrestigeRoad = false,
-                    emptyPrestigeRoad = true,
-                    alreadyOnPrestigeRoad = false
-                ),
-
-                AlreadyOnPrestigeRoad(
-                    emptyRoad = false,
-                    ambiguous = false,
-                    absentFromRank = false,
-                    absentToRank = false,
-                    notOnRoad = false,
-                    notLastRank = false,
-                    absentPrestigeRoad = false,
-                    emptyPrestigeRoad = false,
-                    alreadyOnPrestigeRoad = true
-                );
-
-                constructor(
-                    emptyRoad: Boolean,
-                    ambiguous: Boolean,
-                    absentFromRank: Boolean,
-                    absentToRank: Boolean,
-                    notOnRoad: Boolean,
-                    notLastRank: Boolean,
-                    absentPrestigeRoad: Boolean,
-                    emptyPrestigeRoad: Boolean,
-                    alreadyOnPrestigeRoad: Boolean
-                ) : this(
-                    success = false,
-                    emptyRoad = emptyRoad,
-                    ambiguous = ambiguous,
-                    absentFromRank = absentFromRank,
-                    absentToRank = absentToRank,
-                    notOnRoad = notOnRoad,
-                    notLastRank = notLastRank,
-                    absentPrestigeRoad = absentPrestigeRoad,
-                    emptyPrestigeRoad = emptyPrestigeRoad,
-                    alreadyOnPrestigeRoad = alreadyOnPrestigeRoad
-                )
-
-                override fun wasSuccessful() = success
-
-                override fun isRoadEmpty() = emptyRoad
-
-                override fun isAmbiguous() = ambiguous
-
-                override fun isFromRankAbsent() = absentFromRank
-
-                override fun isToRankAbsent() = absentToRank
-
-                override fun isNotOnRoad() = notOnRoad
-
-                override fun isNotLastRank() = notLastRank
-
-                override fun isPrestigeRoadAbsent() = absentPrestigeRoad
-
-                override fun isPrestigeRoadEmpty() = emptyPrestigeRoad
-
-                override fun isAlreadyOnPrestigeRoad() = alreadyOnPrestigeRoad
-            }
         }
 
         companion object {
 
-            fun success(result: Result): Call = Impl(result, Status.Values.Success)
+            fun success(result: Result) : Call = Impl(
+                player = result.player,
+                road = result.road,
+                fromRank = result.fromRank,
+                toRank = result.toRank,
+                prestigeRoad = result.prestigeRoad,
+                result = result,
+                status = Transition.Call.Status.SUCCESS
+            )
 
-            val EMPTY_ROAD: Call = Impl(Status.Values.EmptyRoad)
+            fun emptyRoad(
+                player: Player,
+                road: Road
+            ) : Call = Impl(
+                player = player,
+                road = road,
+                status = Transition.Call.Status.EMPTY_ROAD
+            )
 
-            val AMBIGUOUS: Call = Impl(Status.Values.Ambiguous)
+            fun ambiguousRank(
+                player: Player,
+                road: Road
+            ) : Call = Impl(
+                player = player,
+                road = road,
+                status = Transition.Call.Status.AMBIGUOUS_RANK
+            )
 
-            val NOT_ON_ROAD: Call = Impl(Status.Values.NotOnRoad)
+            fun notOnRoad(
+                player: Player,
+                road: Road
+            ) : Call = Impl(
+                player = player,
+                road = road,
+                status = Transition.Call.Status.NOT_ON_ROAD
+            )
 
-            val NOT_LAST_RANK: Call = Impl(Status.Values.NotLastRank)
+            fun notLastRank(
+                player: Player,
+                road: Road,
+                fromRank: Rank
+            ) : Call = Impl(
+                player = player,
+                road = road,
+                fromRank = fromRank,
+                status = Transition.Call.Status.NOT_LAST_RANK
+            )
 
-            val ABSENT_PRESTIGE_ROAD: Call = Impl(Status.Values.AbsentPrestigeRoad)
+            fun noPrestigeRoad(
+                player: Player,
+                road: Road,
+                fromRank: Rank
+            ) : Call = Impl(
+                player = player,
+                road = road,
+                fromRank = fromRank,
+                status = Transition.Call.Status.NO_PRESTIGE_ROAD
+            )
 
-            val EMPTY_PRESTIGE_ROAD: Call = Impl(Status.Values.EmptyPrestigeRoad)
+            fun emptyPrestigeRoad(
+                player: Player,
+                road: Road,
+                fromRank: Rank,
+                prestigeRoad: Road
+            ) : Call = Impl(
+                player = player,
+                road = road,
+                fromRank = fromRank,
+                prestigeRoad = prestigeRoad,
+                status = Transition.Call.Status.EMPTY_PRESTIGE_ROAD
+            )
 
-            val ALREADY_ON_PRESTIGE_ROAD: Call = Impl(Status.Values.AlreadyOnPrestigeRoad)
+            fun ambiguousPrestigeRank(
+                player: Player,
+                road: Road,
+                fromRank: Rank,
+                prestigeRoad: Road
+            ) : Call = Impl(
+                player = player,
+                road = road,
+                fromRank = fromRank,
+                prestigeRoad = prestigeRoad,
+                status = Transition.Call.Status.AMBIGUOUS_PRESTIGE_RANK
+            )
+
+            fun alreadyOnPrestigeRoad(
+                player: Player,
+                road: Road,
+                fromRank: Rank,
+                prestigeRoad: Road
+            ) : Call = Impl(
+                player = player,
+                road = road,
+                prestigeRoad = prestigeRoad,
+                fromRank = fromRank,
+                status = Transition.Call.Status.ALREADY_ON_PRESTIGE_ROAD
+            )
         }
 
         private class Impl(
-            override val result: Result?,
-            override val status: Status
+            override val player: Player,
+            override val road: Road,
+            override val fromRank: Rank? = null,
+            override val toRank: Rank? = null,
+            override val prestigeRoad: Road? = null,
+            override val result: Result? = null,
+            override val status: Transition.Call.Status
         ) : Call {
-
-            constructor(status: Status) : this(null, status)
 
             override val proxy = Api(this)
 

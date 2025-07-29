@@ -17,18 +17,24 @@ abstract class AbstractModel(
 
     val prefix = category + "_" + id
 
-    protected val placeholders = mutableListOf<Placeholder>().apply {
-        if (this@AbstractModel is Displayable) add(
-            ContextualPlaceholder(
-                plugin,
-                prefix + "_display_name"
-            ) { _, context -> getFormattedDisplayName(context) } .register()
-        )
-        if (this@AbstractModel is Describable) add(
-            ContextualPlaceholder(
-                plugin,
-                prefix + "_description"
-            ) { _, context -> getFormattedDescription(context) } .register()
-        )
+    protected val placeholders = mutableListOf<Placeholder>()
+
+    open fun initPlaceholders() {
+        if (this is Displayable) {
+            placeholders.add(
+                ContextualPlaceholder(
+                    plugin,
+                    prefix + "_display_name"
+                ) { _, context -> getFormattedDisplayName(context) }.register()
+            )
+        }
+        if (this is Describable) {
+            placeholders.add(
+                ContextualPlaceholder(
+                    plugin,
+                    prefix + "_description"
+                ) { _, context -> getFormattedDescription(context) }.register()
+            )
+        }
     }
 }
