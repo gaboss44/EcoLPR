@@ -6,9 +6,12 @@ import com.github.gaboss44.ecolpr.core.asLpr
 import com.github.gaboss44.ecolpr.core.model.road.Road
 import com.github.gaboss44.ecolpr.core.model.road.Roads
 import com.github.gaboss44.ecolpr.core.util.replacePlaceholders
+import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.PluginCommand
 import com.willfp.eco.core.command.impl.Subcommand
 import com.willfp.eco.core.placeholder.context.PlaceholderContext
+import com.willfp.eco.util.toNiceString
+import com.willfp.eco.util.toNumeral
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
@@ -22,6 +25,8 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
 ) {
     init {
         this.addSubcommand(SubcommandReload(plugin))
+            .addSubcommand(SubcommandSetPrestigeLevel(plugin))
+            .addSubcommand(SubcommandGetPrestigeLevel(plugin))
             .addSubcommand(SubcommandRankup(plugin))
             .addSubcommand(SubcommandIngress(plugin))
             .addSubcommand(SubcommandAscend(plugin))
@@ -48,18 +53,18 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
         }
     }
 
-    abstract class TransitionSubcommand(
-        plugin: EcoLprPlugin,
+    abstract class PlayerRoadSelectSubcommand(
+        plugin: EcoPlugin,
         name: String,
         permission: String,
-        playersOnly: Boolean = false,
+        playersOnly: Boolean = false
     ) : Subcommand(
         plugin,
         name,
         permission,
         playersOnly
     ) {
-        override fun onExecute(sender: CommandSender, args: MutableList<String>) {
+        final override fun onExecute(sender: CommandSender, args: MutableList<String>) {
             if (!Bukkit.isPrimaryThread()) return
 
             val var0 = args.getOrNull(0) ?: run {
@@ -77,24 +82,6 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     "invalid-player",
                     PlaceholderContext.EMPTY
                 ) { it.replace("%player%", var0) }
-                return
-            }
-
-            if (plugin.asLpr().transitionManager.isLocked(player)) {
-                plugin.asLpr().langYml.sendMessage(
-                    sender,
-                    "transition-locked.operator",
-                    PlaceholderContext(player)
-                )
-                return
-            }
-
-            if (plugin.asLpr().transitionManager.isLocked(player)) {
-                plugin.asLpr().langYml.sendMessage(
-                    sender,
-                    "transition-locked",
-                    PlaceholderContext(player)
-                )
                 return
             }
 
@@ -116,22 +103,13 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                 return
             }
 
-            val source = if (sender is ConsoleCommandSender) Transition.Source.CONSOLE else Transition.Source.ADMIN
-
-            executeTransition(
-                sender,
-                player,
-                road,
-                source,
-                args.drop(2).toMutableList()
-            )
+            onExecute(sender, player, road, args.drop(2).toMutableList())
         }
 
-        protected abstract fun executeTransition(
+        protected abstract fun onExecute(
             sender: CommandSender,
             player: Player,
             road: Road,
-            source: Transition.Source,
             args: MutableList<String>
         )
 
@@ -146,6 +124,118 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
 
             return emptyList()
         }
+    }
+
+    class SubcommandSetPrestigeLevel(plugin: EcoLprPlugin) : PlayerRoadSelectSubcommand(
+        plugin,
+        "setprestigelevel",
+        "ecolpr.command.ecolpr.setprestigelevel"
+    ) {
+        override fun onExecute(
+            sender: CommandSender,
+            player: Player,
+            road: Road,
+            args: MutableList<String>
+        ) {
+            if (args.isEmpty()) {
+                plugin.asLpr().langYml.sendMessage(
+                    sender,
+                    "required-prestige-level",
+                    PlaceholderContext(player)
+                )
+                return
+            }
+
+            val levelStr = args[0]
+
+            val level = levelStr.toIntOrNull()
+
+            if (level == null || level < 0) {
+                plugin.asLpr().langYml.sendMessage(
+                    sender,
+                    "invalid-prestige-level",
+                    PlaceholderContext(player)
+                ) { it.replace("%prestige_level%", levelStr.toNiceString()) }
+                return
+            }
+
+            road.setPrestigeLevel(player, level)
+
+            plugin.asLpr().langYml.sendMessage(
+                sender,
+                "set-prestige-level-success.operator",
+                PlaceholderContext(player)
+            ) { it
+                .replacePlaceholders(player, road)
+                .replace("%prestige_level%", level.toNiceString())
+                .replace("%prestige_level_numeral%", level.toNumeral())
+            }
+        }
+    }
+
+    class SubcommandGetPrestigeLevel(plugin: EcoLprPlugin) : PlayerRoadSelectSubcommand(
+        plugin,
+        "getprestigelevel",
+        "ecolpr.command.ecolpr.getprestigelevel"
+    ) {
+        override fun onExecute(
+            sender: CommandSender,
+            player: Player,
+            road: Road,
+            args: MutableList<String>
+        ) {
+            val level = road.getPrestigeLevel(player)
+
+            plugin.asLpr().langYml.sendMessage(
+                sender,
+                "get-prestige-level-success.operator",
+                PlaceholderContext(player)
+            ) { it
+                .replacePlaceholders(player, road)
+                .replace("%prestige_level%", level.toNiceString())
+                .replace("%prestige_level_numeral%", level.toNumeral())
+            }
+        }
+    }
+
+    abstract class TransitionSubcommand(
+        plugin: EcoPlugin,
+        name: String,
+        permission: String,
+        playersOnly: Boolean = false,
+    ) : PlayerRoadSelectSubcommand(
+        plugin,
+        name,
+        permission,
+        playersOnly
+    ) {
+        override fun onExecute(
+            sender: CommandSender,
+            player: Player,
+            road: Road,
+            args: MutableList<String>
+        ) {
+            if (plugin.asLpr().transitionManager.isLocked(player)) {
+                plugin.asLpr().langYml.sendMessage(
+                    sender,
+                    "transition-locked.operator",
+                    PlaceholderContext(player)
+                )
+                return
+            }
+
+            val source = if (sender is ConsoleCommandSender) Transition.Source.CONSOLE else Transition.Source.ADMIN
+
+            executeTransition(sender, player, road, source, args)
+        }
+
+        protected abstract fun executeTransition(
+            sender: CommandSender,
+            player: Player,
+            road: Road,
+            source: Transition.Source,
+            args: MutableList<String>
+        )
     }
 
     class SubcommandRankup(plugin: EcoLprPlugin) : TransitionSubcommand(

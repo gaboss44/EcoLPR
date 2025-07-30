@@ -7,9 +7,10 @@ import com.github.gaboss44.ecolpr.api.exception.transition.ConcurrentTransitionE
 import com.github.gaboss44.ecolpr.api.model.road.PrestigeType
 import com.github.gaboss44.ecolpr.api.transition.Transition
 import com.github.gaboss44.ecolpr.core.EcoLprPlugin
+import com.github.gaboss44.ecolpr.core.EcoLprSettings
 import com.github.gaboss44.ecolpr.core.libreforge.trigger.TriggerTransitionAttempt
 import com.github.gaboss44.ecolpr.core.libreforge.trigger.TriggerTransitionResult
-import com.github.gaboss44.ecolpr.core.luckperms.GroupContext
+import com.github.gaboss44.ecolpr.core.util.GroupContext
 import com.github.gaboss44.ecolpr.core.model.rank.Rank
 import com.github.gaboss44.ecolpr.core.model.road.Road
 import com.github.gaboss44.ecolpr.core.model.road.Roads
@@ -106,7 +107,9 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         checkThread()
         checkPlayer(player)
 
-        return player.withLock { callRankup(player, road, source, options) }
+        return player
+            .withLock { callRankup(player, road, source, options) }
+            .also { if (EcoLprSettings.isDebug()) plugin.logger.info("Transition Call: $it. Transition Options: $options") }
     }
 
     private fun callRankup(
@@ -116,11 +119,11 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         options: Transition.Options
     ): RankupDto.Call {
 
-        if (road.ranks.isEmpty()) return RankupDto.Call.emptyRoad(player, road)
+        if (road.ranks.isEmpty()) return RankupDto.Call.emptyRoad(player, road, source)
 
         val ranks = road.getRanks(player)
 
-        if (ranks.size > 1) return RankupDto.Call.ambiguousRank(player, road)
+        if (ranks.size > 1) return RankupDto.Call.ambiguousRank(player, road, source)
 
         val fromRank = ranks.getOrNull(0)
 
@@ -140,7 +143,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
 
             else -> {
                 val toRank = road.ranks.nextOrNull(fromRank)
-                    ?: return AscensionDto.Call.lastRank(player, road, fromRank)
+                    ?: return AscensionDto.Call.lastRank(player, road, fromRank, source)
                 AscensionDto.Call.success(
                     doAscend(
                         player,
@@ -164,7 +167,9 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         checkThread()
         checkPlayer(player)
 
-        return player.withLock { callIngress(player, road, source, options) }
+        return player
+            .withLock { callIngress(player, road, source, options) }
+            .also { if (EcoLprSettings.isDebug()) plugin.logger.info("Transition Call: $it. Transition Options: $options") }
     }
 
     private fun callIngress(
@@ -174,15 +179,17 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         options: Transition.Options
     ): IngressionDto.Call {
 
-        if (road.ranks.isEmpty()) return IngressionDto.Call.emptyRoad(player, road)
+        if (road.ranks.isEmpty()) return IngressionDto.Call.emptyRoad(player, road, source)
 
         val ranks = road.getRanks(player)
 
-        if (ranks.size > 1) return IngressionDto.Call.ambiguousRank(player, road)
+        if (ranks.size > 1) return IngressionDto.Call.ambiguousRank(player, road, source)
 
-        else if (ranks.isNotEmpty()) return IngressionDto.Call.alreadyOnRoad(player, road)
+        else if (ranks.isNotEmpty()) return IngressionDto.Call.alreadyOnRoad(player, road, source)
 
         val toRank = road.ranks.first()
+
+        if (!toRank.isGroupActive()) return IngressionDto.Call.inactiveRank(player, road, toRank, source)
 
         return IngressionDto.Call.success(
             doIngress(
@@ -258,7 +265,9 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         checkThread()
         checkPlayer(player)
 
-        return player.withLock { callAscend(player, road, source, options) }
+        return player
+            .withLock { callAscend(player, road, source, options) }
+            .also { if (EcoLprSettings.isDebug()) plugin.logger.info("Transition Call: $it. Transition Options: $options") }
     }
 
     private fun callAscend(
@@ -268,15 +277,17 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         options: Transition.Options
     ): AscensionDto.Call {
 
-        if (road.ranks.isEmpty()) return AscensionDto.Call.emptyRoad(player, road)
+        if (road.ranks.isEmpty()) return AscensionDto.Call.emptyRoad(player, road, source)
 
         val ranks = road.getRanks(player)
 
-        if (ranks.size > 1) return AscensionDto.Call.ambiguousRank(player, road)
+        if (ranks.size > 1) return AscensionDto.Call.ambiguousRank(player, road, source)
 
-        val fromRank = ranks.getOrNull(0) ?: return AscensionDto.Call.notOnRoad(player, road)
+        val fromRank = ranks.getOrNull(0) ?: return AscensionDto.Call.notOnRoad(player, road, source)
 
-        val toRank = road.ranks.nextOrNull(fromRank) ?: return AscensionDto.Call.lastRank(player, road, fromRank)
+        val toRank = road.ranks.nextOrNull(fromRank) ?: return AscensionDto.Call.lastRank(player, road, fromRank, source)
+
+        if (!toRank.isGroupActive()) return AscensionDto.Call.inactiveRank(player, road, fromRank, toRank, source)
 
         return AscensionDto.Call.success(
             doAscend(
@@ -357,7 +368,9 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         checkThread()
         checkPlayer(player)
 
-        return player.withLock { callPrestige(player, road, source, options) }
+        return player
+            .withLock { callPrestige(player, road, source, options) }
+            .also { if (EcoLprSettings.isDebug()) plugin.logger.info("Transition Call: $it. Transition Options: $options") }
     }
 
     private fun callPrestige(
@@ -366,7 +379,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         source: Transition.Source,
         options: Transition.Options
     ): PrestigeDto.Call {
-        val type = road.prestigeType ?: return PrestigeDto.Call.notSpecified(player, road)
+        val type = road.prestigeType ?: return PrestigeDto.Call.notSpecified(player, road, source)
         return when (type) {
             PrestigeType.EGRESSION -> callEgress(player, road, source, options)
             PrestigeType.RECURSION -> callRecurse(player, road, source, options)
@@ -383,7 +396,9 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         checkThread()
         checkPlayer(player)
 
-        return player.withLock { callEgress(player, road, source, options) }
+        return player
+            .withLock { callEgress(player, road, source, options) }
+            .also { if (EcoLprSettings.isDebug()) plugin.logger.info("Transition Call: $it. Transition Options: $options") }
     }
 
     private fun callEgress(
@@ -393,15 +408,15 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         options: Transition.Options
     ): EgressionDto.Call {
 
-        if (road.ranks.isEmpty()) return EgressionDto.Call.emptyRoad(player, road)
+        if (road.ranks.isEmpty()) return EgressionDto.Call.emptyRoad(player, road, source)
 
         val ranks = road.getRanks(player)
 
-        if (ranks.size > 1) return EgressionDto.Call.ambiguousRank(player, road)
+        if (ranks.size > 1) return EgressionDto.Call.ambiguousRank(player, road, source)
 
-        val fromRank = ranks.getOrNull(0) ?: return EgressionDto.Call.notOnRoad(player, road)
+        val fromRank = ranks.getOrNull(0) ?: return EgressionDto.Call.notOnRoad(player, road, source)
 
-        if (fromRank != road.ranks.last()) return EgressionDto.Call.notLastRank(player, road, fromRank)
+        if (fromRank != road.ranks.last()) return EgressionDto.Call.notLastRank(player, road, fromRank, source)
 
         return EgressionDto.Call.success(
             doEgress(
@@ -483,7 +498,9 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         checkThread()
         checkPlayer(player)
 
-        return player.withLock { callRecurse(player, road, source, options) }
+        return player
+            .withLock { callRecurse(player, road, source, options) }
+            .also { if (EcoLprSettings.isDebug()) plugin.logger.info("Transition Call: $it. Transition Options: $options") }
     }
 
     private fun callRecurse(
@@ -493,22 +510,26 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         options: Transition.Options
     ): RecursionDto.Call {
 
-        if (road.ranks.isEmpty()) return RecursionDto.Call.emptyRoad(player, road)
+        if (road.ranks.isEmpty()) return RecursionDto.Call.emptyRoad(player, road, source)
 
         val ranks = road.getRanks(player)
 
-        if (ranks.size > 1) return RecursionDto.Call.ambiguousRank(player, road)
+        if (ranks.size > 1) return RecursionDto.Call.ambiguousRank(player, road, source)
 
-        val fromRank = ranks.getOrNull(0) ?: return RecursionDto.Call.notOnRoad(player, road)
+        val fromRank = ranks.getOrNull(0) ?: return RecursionDto.Call.notOnRoad(player, road, source)
 
-        if (fromRank != road.ranks.last()) return RecursionDto.Call.notLastRank(player, road, fromRank)
+        if (fromRank != road.ranks.last()) return RecursionDto.Call.notLastRank(player, road, fromRank, source)
+
+        val toRank = road.ranks.first()
+
+        if (!toRank.isGroupActive()) return RecursionDto.Call.inactiveRank(player, road, fromRank, toRank, source)
 
         return RecursionDto.Call.success(
             doRecurse(
                 player,
                 road,
                 fromRank,
-                road.ranks.first(),
+                toRank,
                 source,
                 options
             )
@@ -591,7 +612,9 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         checkThread()
         checkPlayer(player)
 
-        return player.withLock { callMigrate(player, road, source, options) }
+        return player
+            .withLock { callMigrate(player, road, source, options) }
+            .also { if (EcoLprSettings.isDebug()) plugin.logger.info("Transition Call: $it. Transition Options: $options") }
     }
 
     private fun callMigrate(
@@ -601,29 +624,31 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         options: Transition.Options
     ): MigrationDto.Call {
 
-        if (road.ranks.isEmpty()) return MigrationDto.Call.emptyRoad(player, road)
+        if (road.ranks.isEmpty()) return MigrationDto.Call.emptyRoad(player, road, source)
 
         val ranks = road.getRanks(player)
 
-        if (ranks.size > 1) return MigrationDto.Call.ambiguousRank(player, road)
+        if (ranks.size > 1) return MigrationDto.Call.ambiguousRank(player, road, source)
 
-        val fromRank = ranks.getOrNull(0) ?: return MigrationDto.Call.notOnRoad(player, road)
+        val fromRank = ranks.getOrNull(0) ?: return MigrationDto.Call.notOnRoad(player, road, source)
 
-        if (fromRank != road.ranks.last()) return MigrationDto.Call.notLastRank(player, road, fromRank)
+        if (fromRank != road.ranks.last()) return MigrationDto.Call.notLastRank(player, road, fromRank, source)
 
         val prestigeTarget = options.prestigeTarget ?: road.prestigeTarget
 
-        val prestigeRoad = Roads[prestigeTarget] ?: return MigrationDto.Call.noPrestigeRoad(player, road, fromRank)
+        val prestigeRoad = Roads[prestigeTarget] ?: return MigrationDto.Call.noPrestigeRoad(player, road, fromRank, source)
 
-        if (prestigeRoad.ranks.isEmpty()) return MigrationDto.Call.emptyPrestigeRoad(player, road, fromRank, prestigeRoad)
+        if (prestigeRoad.ranks.isEmpty()) return MigrationDto.Call.emptyPrestigeRoad(player, road, fromRank, prestigeRoad, source)
 
         val otherRanks = prestigeRoad.getRanks(player)
 
-        if (otherRanks.size > 1) return MigrationDto.Call.ambiguousRank(player, prestigeRoad)
+        if (otherRanks.size > 1) return MigrationDto.Call.ambiguousPrestigeRank(player, prestigeRoad, fromRank, prestigeRoad, source)
 
-        if (otherRanks.isNotEmpty()) return MigrationDto.Call.alreadyOnPrestigeRoad(player, road, fromRank, prestigeRoad)
+        if (otherRanks.isNotEmpty()) return MigrationDto.Call.alreadyOnPrestigeRoad(player, road, fromRank, prestigeRoad, source)
 
         val toRank = prestigeRoad.ranks.first()
+
+        if (!toRank.isGroupActive()) return MigrationDto.Call.inactivePrestigeRank(player, road, fromRank, toRank, prestigeRoad, source)
 
         return MigrationDto.Call.success(
             doMigrate(

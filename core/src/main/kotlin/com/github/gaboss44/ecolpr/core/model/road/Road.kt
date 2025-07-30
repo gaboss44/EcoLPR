@@ -165,12 +165,11 @@ class Road(
         )
     }
 
-    override fun getRanks(
-        player: Player
-    ) = plugin.luckperms
+    override fun getRanks(player: Player) = plugin.luckperms
         .getUser(player)
         .getInheritedGroups(contextSet)
         .mapNotNull { Ranks.getByGroup(it) }
+        .filter(ranks::contains)
 
     fun getCurrentRank(player: Player): Rank? {
         val ranks = this.getRanks(player)
@@ -211,8 +210,7 @@ class Road(
 
     val prestigeRoad get() = Roads[prestigeTarget]
 
-    override val contextSet = config
-        .getSubsectionOrNull("context-set")
+    override val contextSet = config.getSubsectionOrNull("context-set")
         ?. let { parseContextSet(it) }
         ?: plugin.luckperms.staticQueryOptions.context()
 

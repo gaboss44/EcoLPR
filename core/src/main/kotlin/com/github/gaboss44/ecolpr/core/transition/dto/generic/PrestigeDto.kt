@@ -58,12 +58,21 @@ interface PrestigeDto : TransitionDto.FromRank, Prestige {
         }
 
         companion object {
-            fun notSpecified(player: Player, road: Road): Call = NotSpecified(player, road)
+            fun notSpecified(
+                player: Player,
+                road: Road,
+                source: Transition.Source
+            ): Call = NotSpecified(
+                player,
+                road,
+                source
+            )
         }
 
         private class NotSpecified(
             override val player: Player,
-            override val road: Road
+            override val road: Road,
+            override val source: Transition.Source
         ) : Call {
             override val result = null
             override val fromRank = null
@@ -72,6 +81,17 @@ interface PrestigeDto : TransitionDto.FromRank, Prestige {
             override val proxy: Api = Api(this)
 
             class Api(override val handle: NotSpecified) : Call.Api
+
+            override fun toString(): String {
+                return "Prestige(" +
+                        "player=${player.name}, " +
+                        "road=${road.name}, " +
+                        "from-rank=<none>}, " +
+                        "to-rank=<none>}, " +
+                        "source=$source, " +
+                        "call-status=$status, " +
+                        "result-status=<none>})"
+            }
         }
     }
 

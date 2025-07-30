@@ -60,24 +60,29 @@ interface RankupDto : TransitionDto.ToRank, Rankup {
                 player = player,
                 road = road,
                 result = result,
+                source = result.source,
                 status = Transition.Call.Status.SUCCESS
             )
 
             fun emptyRoad(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.EMPTY_ROAD
             )
 
             fun ambiguousRank(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.AMBIGUOUS_RANK
             )
         }
@@ -86,13 +91,24 @@ interface RankupDto : TransitionDto.ToRank, Rankup {
             override val player: Player,
             override val road: Road,
             override val toRank: Rank? = null,
-            override val result: Result? = null,
-            override val status: Transition.Call.Status
+            override val source: Transition.Source,
+            override val status: Transition.Call.Status,
+            override val result: Result? = null
         ) : Call {
 
             override val proxy = Api(this)
 
             class Api(override val handle: Call) : Call.Api
+
+            override fun toString(): String {
+                return "Rankup(" +
+                        "player=${player.name}, " +
+                        "road=${road.name}, " +
+                        "to-rank=${toRank?.name ?: "<none>"}, " +
+                        "source=$source, " +
+                        "call-status=$status, " +
+                        "result-status=${result?.status ?: "<none>"})"
+            }
         }
     }
 

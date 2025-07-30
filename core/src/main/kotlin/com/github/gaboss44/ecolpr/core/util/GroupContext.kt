@@ -1,4 +1,4 @@
-package com.github.gaboss44.ecolpr.core.luckperms
+package com.github.gaboss44.ecolpr.core.util
 
 import net.luckperms.api.context.ContextSet
 

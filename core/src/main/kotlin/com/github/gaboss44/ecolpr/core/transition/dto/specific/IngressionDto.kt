@@ -80,7 +80,7 @@ interface IngressionDto : RankupDto, Ingression {
 
         companion object {
 
-            fun success(attempt: Attempt) = Result(attempt, Transition.Status.SUCCESS,)
+            fun success(attempt: Attempt) = Result(attempt, Transition.Status.SUCCESS)
 
             fun cancelled(attempt: Attempt) = Result(attempt, Transition.Status.CANCELLED)
 
@@ -121,35 +121,55 @@ interface IngressionDto : RankupDto, Ingression {
                 player = result.player,
                 road = result.road,
                 toRank = result.toRank,
+                source = result.source,
                 result = result,
                 status = Transition.Call.Status.SUCCESS
             )
 
             fun emptyRoad(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.EMPTY_ROAD
             )
 
             fun ambiguousRank(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.AMBIGUOUS_RANK
             )
 
             fun alreadyOnRoad(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.ALREADY_ON_ROAD
+            )
+
+            fun inactiveRank(
+                player: Player,
+                road: Road,
+                toRank: Rank,
+                source: Transition.Source
+            ): Call = Impl(
+                player = player,
+                road = road,
+                toRank = toRank,
+                source = source,
+                status = Transition.Call.Status.INACTIVE_RANK
             )
         }
 
@@ -157,6 +177,7 @@ interface IngressionDto : RankupDto, Ingression {
             override val player: Player,
             override val road: Road,
             override val toRank: Rank? = null,
+            override val source: Transition.Source,
             override val result: Result? = null,
             override val status: Transition.Call.Status,
         ) : Call {
@@ -164,6 +185,16 @@ interface IngressionDto : RankupDto, Ingression {
             class Api(override val handle: Call) : Call.Api
 
             override val proxy = Api(this)
+
+            override fun toString(): String {
+                return "Ingression(" +
+                        "player=${player.name}, " +
+                        "road=${road.name}, " +
+                        "to-rank=${toRank?.name ?: "<none>"}, " +
+                        "source=$source, " +
+                        "call-status=$status, " +
+                        "result-status=${result?.status ?: "<none>"})"
+            }
         }
     }
 }

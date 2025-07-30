@@ -146,56 +146,67 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
                 fromRank = result.fromRank,
                 toRank = result.toRank,
                 prestigeRoad = result.prestigeRoad,
+                source = result.source,
                 result = result,
                 status = Transition.Call.Status.SUCCESS
             )
 
             fun emptyRoad(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ) : Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.EMPTY_ROAD
             )
 
             fun ambiguousRank(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ) : Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.AMBIGUOUS_RANK
             )
 
             fun notOnRoad(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ) : Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.NOT_ON_ROAD
             )
 
             fun notLastRank(
                 player: Player,
                 road: Road,
-                fromRank: Rank
+                fromRank: Rank,
+                source: Transition.Source
             ) : Call = Impl(
                 player = player,
                 road = road,
                 fromRank = fromRank,
+                source = source,
                 status = Transition.Call.Status.NOT_LAST_RANK
             )
 
             fun noPrestigeRoad(
                 player: Player,
                 road: Road,
-                fromRank: Rank
+                fromRank: Rank,
+                source: Transition.Source
             ) : Call = Impl(
                 player = player,
                 road = road,
                 fromRank = fromRank,
+                source = source,
                 status = Transition.Call.Status.NO_PRESTIGE_ROAD
             )
 
@@ -203,12 +214,14 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
                 player: Player,
                 road: Road,
                 fromRank: Rank,
-                prestigeRoad: Road
+                prestigeRoad: Road,
+                source: Transition.Source
             ) : Call = Impl(
                 player = player,
                 road = road,
                 fromRank = fromRank,
                 prestigeRoad = prestigeRoad,
+                source = source,
                 status = Transition.Call.Status.EMPTY_PRESTIGE_ROAD
             )
 
@@ -216,12 +229,14 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
                 player: Player,
                 road: Road,
                 fromRank: Rank,
-                prestigeRoad: Road
+                prestigeRoad: Road,
+                source: Transition.Source
             ) : Call = Impl(
                 player = player,
                 road = road,
                 fromRank = fromRank,
                 prestigeRoad = prestigeRoad,
+                source = source,
                 status = Transition.Call.Status.AMBIGUOUS_PRESTIGE_RANK
             )
 
@@ -229,13 +244,32 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
                 player: Player,
                 road: Road,
                 fromRank: Rank,
-                prestigeRoad: Road
+                prestigeRoad: Road,
+                source: Transition.Source
             ) : Call = Impl(
                 player = player,
                 road = road,
                 prestigeRoad = prestigeRoad,
                 fromRank = fromRank,
+                source = source,
                 status = Transition.Call.Status.ALREADY_ON_PRESTIGE_ROAD
+            )
+
+            fun inactivePrestigeRank(
+                player: Player,
+                road: Road,
+                fromRank: Rank,
+                toRank: Rank,
+                prestigeRoad: Road,
+                source: Transition.Source
+            ) : Call = Impl(
+                player = player,
+                road = road,
+                fromRank = fromRank,
+                toRank = toRank,
+                prestigeRoad = prestigeRoad,
+                source = source,
+                status = Transition.Call.Status.INACTIVE_PRESTIGE_RANK
             )
         }
 
@@ -245,6 +279,7 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
             override val fromRank: Rank? = null,
             override val toRank: Rank? = null,
             override val prestigeRoad: Road? = null,
+            override val source: Transition.Source,
             override val result: Result? = null,
             override val status: Transition.Call.Status
         ) : Call {
@@ -252,6 +287,18 @@ interface MigrationDto : PrestigeDto.WithTarget, Migration {
             override val proxy = Api(this)
 
             class Api(override val handle: Call) : Call.Api
+
+            override fun toString(): String {
+                return "Migration(" +
+                        "player=${player.name}, " +
+                        "road=${road.name}, " +
+                        "from-rank=${fromRank?.name ?: "<none>"}, " +
+                        "to-rank=${toRank?.name ?: "<none>"}, " +
+                        "prestigeRoad=${prestigeRoad?.name ?: "<none>"}, " +
+                        "source=$source, " +
+                        "call-status=$status, " +
+                        "result-status=${result?.status ?: "<none>"})"
+            }
         }
     }
 }

@@ -140,45 +140,54 @@ interface EgressionDto : PrestigeDto, Egression {
                 player = result.player,
                 road = result.road,
                 fromRank = result.fromRank,
+                source = result.source,
                 result = result,
                 status = Transition.Call.Status.SUCCESS
             )
 
             fun emptyRoad(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.EMPTY_ROAD
             )
 
             fun ambiguousRank(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.AMBIGUOUS_RANK
             )
 
             fun notOnRoad(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.NOT_ON_ROAD
             )
 
             fun notLastRank(
                 player: Player,
                 road: Road,
-                fromRank: Rank
+                fromRank: Rank,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
                 fromRank = fromRank,
+                source = source,
                 status = Transition.Call.Status.NOT_LAST_RANK
             )
         }
@@ -187,6 +196,7 @@ interface EgressionDto : PrestigeDto, Egression {
             override val player: Player,
             override val road: Road,
             override val fromRank: Rank? = null,
+            override val source: Transition.Source,
             override val result: Result? = null,
             override val status: Transition.Call.Status,
         ) : Call {
@@ -194,6 +204,16 @@ interface EgressionDto : PrestigeDto, Egression {
             class Api(override val handle: Call) : Call.Api
 
             override val proxy = Api(this)
+
+            override fun toString(): String {
+                return "Egression(" +
+                        "player=${player.name}, " +
+                        "road=${road.name}, " +
+                        "from-rank=${fromRank?.name ?: "<none>"}, " +
+                        "source=$source, " +
+                        "call-status=$status, " +
+                        "result-status=${result?.status ?: "<none>"})"
+            }
         }
     }
 }

@@ -195,6 +195,8 @@ interface Transition {
 
         val road: Road
 
+        val source: Source
+
         val result: Result?
 
         val status: Status
@@ -227,6 +229,8 @@ interface Transition {
 
             ALREADY_ON_ROAD("already_on_road", TO_RANK_FAILURE),
 
+            INACTIVE_RANK("inactive_rank", TO_RANK_FAILURE),
+
             PRESTIGE_FAILURE("prestige_failure", FAILURE),
 
             PRESTIGE_TYPE_NOT_SPECIFIED("prestige_type_not_specified", PRESTIGE_FAILURE),
@@ -239,7 +243,9 @@ interface Transition {
 
             AMBIGUOUS_PRESTIGE_RANK("ambiguous_prestige_rank", PRESTIGE_WITH_TARGET_FAILURE),
 
-            ALREADY_ON_PRESTIGE_ROAD("already_on_prestige_road", PRESTIGE_WITH_TARGET_FAILURE);
+            ALREADY_ON_PRESTIGE_ROAD("already_on_prestige_road", PRESTIGE_WITH_TARGET_FAILURE),
+
+            INACTIVE_PRESTIGE_RANK("inactive_prestige_rank", PRESTIGE_WITH_TARGET_FAILURE);
 
             constructor(
                 lowerValue: String,
@@ -317,6 +323,14 @@ interface Transition {
             setPrestigeTarget(prestigeTarget)
         }
 
+        override fun toString(): String {
+            return "Options(" +
+                    "mode=$mode, " +
+                    "events=$events, " +
+                    "effects=$effects, " +
+                    "prestigeTarget=$prestigeTarget)"
+        }
+
         companion object {
             private val FORCE = Builder(Mode.FORCE).build()
             private val TEST = Builder(Mode.TEST).build()
@@ -387,8 +401,8 @@ interface Transition {
                             iterator.remove()
                         }
 
-                        str.startsWith("prestige-target=") -> {
-                            val target = arg.substringAfter("prestige-target=", "")
+                        str.startsWith("--prestige-target=") -> {
+                            val target = arg.substringAfter("--prestige-target=", "")
                             if (target.isNotBlank()) {
                                 builder.setPrestigeTarget(target)
                                 iterator.remove()

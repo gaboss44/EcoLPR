@@ -68,6 +68,8 @@ interface TransitionDto : Transition {
             override val road get() = this.handle.road.proxy
 
             override val status get() = this.handle.status
+
+            override val source get() = this.handle.source
         }
     }
 

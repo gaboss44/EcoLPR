@@ -146,46 +146,70 @@ interface AscensionDto : RankupDto.FromRank, Ascension {
                 road = result.road,
                 fromRank = result.fromRank,
                 toRank = result.toRank,
+                source = result.source,
                 result = result,
                 status = Transition.Call.Status.SUCCESS
             )
 
             fun emptyRoad(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.EMPTY_ROAD
             )
 
             fun ambiguousRank(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.AMBIGUOUS_RANK
             )
 
             fun notOnRoad(
                 player: Player,
-                road: Road
+                road: Road,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
+                source = source,
                 status = Transition.Call.Status.NOT_ON_ROAD
             )
 
             fun lastRank(
                 player: Player,
                 road: Road,
-                fromRank: Rank
+                fromRank: Rank,
+                source: Transition.Source
             ): Call = Impl(
                 player = player,
                 road = road,
                 fromRank = fromRank,
+                source = source,
                 status = Transition.Call.Status.LAST_RANK
+            )
+
+            fun inactiveRank(
+                player: Player,
+                road: Road,
+                fromRank: Rank,
+                toRank: Rank,
+                source: Transition.Source
+            ): Call = Impl(
+                player = player,
+                road = road,
+                fromRank = fromRank,
+                toRank = toRank,
+                source = source,
+                status = Transition.Call.Status.INACTIVE_RANK
             )
         }
 
@@ -194,13 +218,25 @@ interface AscensionDto : RankupDto.FromRank, Ascension {
             override val road: Road,
             override val fromRank: Rank? = null,
             override val toRank: Rank? = null,
-            override val result: Result? = null,
-            override val status: Transition.Call.Status
+            override val source: Transition.Source,
+            override val status: Transition.Call.Status,
+            override val result: Result? = null
         ) : Call {
 
             override val proxy = Api(this)
 
             class Api(override val handle: Call) : Call.Api
+
+            override fun toString(): String {
+                return "Ascension(" +
+                        "player=${player.name}, " +
+                        "road=${road.name}, " +
+                        "from-rank=${fromRank?.name ?: "<none>"}, " +
+                        "to-rank=${toRank?.name ?: "<none>"}, " +
+                        "source=$source, " +
+                        "call-status=$status, " +
+                        "result-status=${result?.status ?: "<none>"})"
+            }
         }
     }
 }

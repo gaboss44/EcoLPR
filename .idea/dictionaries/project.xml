@@ -2,9 +2,11 @@
   <dictionary name="project">
     <words>
       <w>ecolpr</w>
+      <w>getprestigelevel</w>
       <w>libreforge</w>
       <w>luckperms</w>
       <w>rankup</w>
+      <w>setprestigelevel</w>
     </words>
   </dictionary>
 </component>

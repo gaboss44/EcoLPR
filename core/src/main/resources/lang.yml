@@ -13,6 +13,15 @@ messages:
   required-player: "&cYou must specify a player"
   invalid-player: "&cPlayer %player% not found"
 
+  required-prestige-level: "&cYou must specify a prestige level"
+  invalid-prestige-level: "&cThe prestige level %prestige_level% is not valid"
+
+  set-prestige-level-success:
+    operator: "%prefix% Set player %player%'s prestige level to %prestige_level% on road %road%"
+
+  get-prestige-level-success:
+    operator: "%prefix% Player %player% has a prestige level of %prestige_level% on road %road%"
+
   transition-locked:
     player: "%prefix% You cannot transition on %road% because you are locked"
     operator: "%prefix% Player %player% cannot transition to %road% they are locked"
