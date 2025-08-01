@@ -16,13 +16,11 @@ abstract class TransitionEffect(
     protected val plugin: EcoLprPlugin,
     id: String
 ) : Effect<Transition.Options>(id) {
-    override val isPermanent = false
-
-    override val parameters = setOf(
+    final override val parameters = setOf(
         TriggerParameter.PLAYER
     )
 
-    override val arguments = arguments {
+    final override val arguments = arguments {
         require("road", "You must specify a road")
     }
 
@@ -31,7 +29,7 @@ abstract class TransitionEffect(
         context: ViolationContext
     ) = Transition.Options.parseArgs(config)
 
-    override fun onTrigger(config: Config, data: TriggerData, compileData: Transition.Options): Boolean {
+    final override fun onTrigger(config: Config, data: TriggerData, compileData: Transition.Options): Boolean {
         val player = data.player ?: return false
         val road = Roads[config.getStringOrNull("road")] ?: return false
         return try {

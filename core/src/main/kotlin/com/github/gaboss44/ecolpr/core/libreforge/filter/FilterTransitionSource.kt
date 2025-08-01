@@ -2,6 +2,7 @@ package com.github.gaboss44.ecolpr.core.libreforge.filter
 
 import com.github.gaboss44.ecolpr.api.event.transition.TransitionEvent
 import com.github.gaboss44.ecolpr.api.transition.Transition
+import com.github.gaboss44.ecolpr.core.util.castOrNull
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.libreforge.ConfigWarning
 import com.willfp.libreforge.ViolationContext
@@ -25,7 +26,7 @@ object FilterTransitionSource : Filter<Collection<Transition.Source>, Collection
             context.log(
                 ConfigWarning(
                     id,
-                    "Filter $id does not recognize '$value'"
+                    "Filter $id does not recognize source '$value'"
                 )
             )
         }
@@ -37,7 +38,7 @@ object FilterTransitionSource : Filter<Collection<Transition.Source>, Collection
         value: Collection<String>,
         compileData: Collection<Transition.Source>
     ): Boolean {
-        val source = (data.event as? TransitionEvent)?.transition?.source ?: return false
+        val source = (data.event as? TransitionEvent)?.transition?.castOrNull()?.source ?: return false
         return compileData.any { source.inherits(it) }
     }
 }

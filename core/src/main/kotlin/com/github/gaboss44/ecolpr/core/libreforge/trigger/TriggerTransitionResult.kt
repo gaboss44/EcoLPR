@@ -21,7 +21,8 @@ object TriggerTransitionResult : Trigger("ecolpr_transition_result") {
             player.toDispatcher(),
             TriggerData(
                 player = player,
-                event = event
+                event = event,
+                value = event.transition.status.triggerValue
             )
         )
     }

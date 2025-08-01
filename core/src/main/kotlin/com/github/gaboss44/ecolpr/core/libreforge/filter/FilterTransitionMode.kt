@@ -2,6 +2,7 @@ package com.github.gaboss44.ecolpr.core.libreforge.filter
 
 import com.github.gaboss44.ecolpr.api.event.transition.TransitionEvent
 import com.github.gaboss44.ecolpr.api.transition.Transition
+import com.github.gaboss44.ecolpr.core.util.castOrNull
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.libreforge.ConfigWarning
 import com.willfp.libreforge.ViolationContext
@@ -25,7 +26,7 @@ object FilterTransitionMode : Filter<Collection<Transition.Mode>, Collection<Str
             context.log(
                 ConfigWarning(
                     id,
-                    "Filter $id does not recognize setMode '$value'"
+                    "Filter $id does not recognize mode '$value'"
                 )
             )
         }
@@ -38,7 +39,7 @@ object FilterTransitionMode : Filter<Collection<Transition.Mode>, Collection<Str
         value: Collection<String>,
         compileData: Collection<Transition.Mode>
     ): Boolean {
-        val mode = (data.event as? TransitionEvent)?.transition?.mode ?: return false
+        val mode = (data.event as? TransitionEvent)?.transition?.castOrNull()?.mode ?: return false
         return compileData.any { mode == it }
     }
 }

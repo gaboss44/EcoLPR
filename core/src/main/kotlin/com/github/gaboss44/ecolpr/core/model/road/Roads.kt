@@ -9,9 +9,9 @@ import com.willfp.libreforge.loader.configs.RegistrableCategory
 
 object Roads : RegistrableCategory<Road>("road", "roads") {
 
-    override fun clear(plugin: LibreforgePlugin) {
-        registry.clear()
-    }
+    override fun clear(plugin: LibreforgePlugin) { registry.clear() }
+
+    fun proxyValues() = registry.values().mapNotNull { it.proxy }.toSet()
 
     override fun acceptConfig(plugin: LibreforgePlugin, id: String, config: Config) {
         plugin as EcoLprPlugin
@@ -28,7 +28,4 @@ object Roads : RegistrableCategory<Road>("road", "roads") {
             }
         }
     }
-
-    fun proxyValues() = registry.values().mapNotNull { it.proxy }.toSet()
-
 }

@@ -5,6 +5,7 @@ import com.github.gaboss44.ecolpr.core.EcoLprPlugin
 import com.github.gaboss44.ecolpr.core.asLpr
 import com.github.gaboss44.ecolpr.core.model.road.Road
 import com.github.gaboss44.ecolpr.core.model.road.Roads
+import com.github.gaboss44.ecolpr.core.util.replace
 import com.github.gaboss44.ecolpr.core.util.replacePlaceholders
 import com.willfp.eco.core.EcoPlugin
 import com.willfp.eco.core.command.impl.PluginCommand
@@ -81,7 +82,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "invalid-player",
                     PlaceholderContext.EMPTY
-                ) { it.replace("%player%", var0) }
+                ) { replace("%player%", var0) }
                 return
             }
 
@@ -99,7 +100,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "invalid-road",
                     PlaceholderContext(player)
-                ) { it.replace("%road%", var1) }
+                ) { replace("%road%", var1) }
                 return
             }
 
@@ -155,7 +156,7 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "invalid-prestige-level",
                     PlaceholderContext(player)
-                ) { it.replace("%prestige_level%", levelStr.toNiceString()) }
+                ) { replace("%prestige_level%", levelStr) }
                 return
             }
 
@@ -165,10 +166,10 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                 sender,
                 "set-prestige-level-success.operator",
                 PlaceholderContext(player)
-            ) { it
-                .replacePlaceholders(player, road)
-                .replace("%prestige_level%", level.toNiceString())
-                .replace("%prestige_level_numeral%", level.toNumeral())
+            ) {
+                replacePlaceholders(player, road)
+                replace("%prestige_level%", level.toNiceString())
+                replace("%prestige_level_numeral%", level.toNumeral())
             }
         }
     }
@@ -190,10 +191,10 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                 sender,
                 "get-prestige-level-success.operator",
                 PlaceholderContext(player)
-            ) { it
-                .replacePlaceholders(player, road)
-                .replace("%prestige_level%", level.toNiceString())
-                .replace("%prestige_level_numeral%", level.toNumeral())
+            ) {
+                replacePlaceholders(player, road)
+                replace("%prestige_level%", level.toNiceString())
+                replace("%prestige_level_numeral%", level.toNumeral())
             }
         }
     }
@@ -264,13 +265,13 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "rankup-success.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, result) }
+                ) { replacePlaceholders(player, result) }
             } else {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "rankup-failure.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, road) }
+                ) { replacePlaceholders(player, road) }
             }
         }
     }
@@ -301,13 +302,13 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "ingress-success.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, result) }
+                ) { replacePlaceholders(player, result) }
             } else {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "ingress-failure.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, road) }
+                ) { replacePlaceholders(player, road) }
             }
         }
     }
@@ -338,13 +339,13 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "ascend-success.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, result) }
+                ) { replacePlaceholders(player, result) }
             } else {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "ascend-failure.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, road) }
+                ) { replacePlaceholders(player, road) }
             }
         }
     }
@@ -375,13 +376,13 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "prestige-success.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, result) }
+                ) { replacePlaceholders(player, result) }
             } else {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "prestige-failure.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, road) }
+                ) { replacePlaceholders(player, road) }
             }
         }
     }
@@ -412,13 +413,13 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "egress-success.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, result) }
+                ) { replacePlaceholders(player, result) }
             } else {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "egress-failure.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, road) }
+                ) { replacePlaceholders(player, road) }
             }
         }
     }
@@ -449,13 +450,13 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "recurse-success.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, result) }
+                ) { replacePlaceholders(player, result) }
             } else {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "recurse-failure.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, road) }
+                ) { replacePlaceholders(player, road) }
             }
         }
     }
@@ -486,13 +487,13 @@ class CommandEcoLpr(plugin: EcoLprPlugin) : PluginCommand(
                     sender,
                     "migrate-success.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, result) }
+                ) { replacePlaceholders(player, result) }
             } else {
                 plugin.asLpr().langYml.sendMessage(
                     sender,
                     "migrate-failure.operator",
                     PlaceholderContext(player)
-                ) { it.replacePlaceholders(player, road) }
+                ) { replacePlaceholders(player, road) }
             }
         }
     }

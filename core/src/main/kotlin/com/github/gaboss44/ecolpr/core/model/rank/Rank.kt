@@ -1,5 +1,6 @@
 package com.github.gaboss44.ecolpr.core.model.rank
 
+import com.github.gaboss44.ecolpr.core.model.road.Road
 import com.github.gaboss44.ecolpr.core.EcoLprPlugin
 import com.github.gaboss44.ecolpr.core.exception.InvalidConfigException
 import com.github.gaboss44.ecolpr.core.model.AbstractModel
@@ -36,12 +37,14 @@ class Rank(
 
     override val description = config.getString("description")
 
-    override fun isHeldBy(
-        player: Player,
-        contextSet: ContextSet?
-    ) = plugin.luckperms.getGroup(group)
-        ?.let { plugin.luckperms.getUser(player).hasGroupNode(it, contextSet) }
-        ?: false
+    override fun isHeldBy(player: Player, contextSet: ContextSet?) =
+        plugin.luckperms.getGroup(group)
+            ?.let { plugin.luckperms.getUser(player).hasGroupNode(it, contextSet) }
+            ?: false
+
+    fun isHeldBy(player: Player, road: Road): Boolean {
+        return this.isHeldBy(player, road.contextSet)
+    }
 
     override fun onRegister() {
         Ranks.byGroup.put(group, this)

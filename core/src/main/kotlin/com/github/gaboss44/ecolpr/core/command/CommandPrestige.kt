@@ -26,12 +26,12 @@ class CommandPrestige(plugin: EcoLprPlugin) : PlayerTransitionCommand(
             plugin.asLpr().langYml.sendMessage(
                 player,
                 "prestige-success.player"
-            ) { it.replacePlaceholders(player, result) }
+            ) { replacePlaceholders(player, result) }
         } else {
             plugin.asLpr().langYml.sendMessage(
                 player,
                 "prestige-failure.player"
-            ) { it.replacePlaceholders(player, road) }
+            ) { replacePlaceholders(player, road) }
         }
     }
 }

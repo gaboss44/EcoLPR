@@ -18,6 +18,8 @@ object Ranks : RegistrableCategory<Rank>("rank", "ranks") {
 
     override fun clear(plugin: LibreforgePlugin) { registry.clear() }
 
+    fun proxyValues() = registry.values().mapNotNull { it.proxy }.toSet()
+
     override fun acceptConfig(plugin: LibreforgePlugin, id: String, config: Config) {
         plugin as EcoLprPlugin
         try {
@@ -34,7 +36,4 @@ object Ranks : RegistrableCategory<Rank>("rank", "ranks") {
             }
         }
     }
-
-    fun proxyValues() = registry.values().mapNotNull { it.proxy }.toSet()
-
 }

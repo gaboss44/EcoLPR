@@ -5,6 +5,7 @@ import com.github.gaboss44.ecolpr.core.EcoLprPlugin
 import com.github.gaboss44.ecolpr.core.asLpr
 import com.github.gaboss44.ecolpr.core.model.road.Road
 import com.github.gaboss44.ecolpr.core.model.road.Roads
+import com.github.gaboss44.ecolpr.core.util.replace
 import com.github.gaboss44.ecolpr.core.util.replacePlaceholders
 import com.willfp.eco.core.command.impl.PluginCommand
 import org.bukkit.Bukkit
@@ -32,14 +33,14 @@ abstract class PlayerTransitionCommand(
 
         val road = Roads[arg0] ?: run {
             plugin.asLpr().langYml.sendMessage(player, "invalid-road") {
-                it.replace("%road%", arg0)
+                replace("%road%", arg0)
             }
             return
         }
 
         if (!road.isVisibleFor(player)) {
             plugin.asLpr().langYml.sendMessage(player, "hidden-road") {
-                it.replacePlaceholders(player, road)
+                replacePlaceholders(player, road)
             }
             return
         }

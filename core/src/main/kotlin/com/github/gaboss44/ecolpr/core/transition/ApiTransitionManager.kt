@@ -20,8 +20,7 @@ class ApiTransitionManager(
         player,
         road.cast(),
         Transition.Source.API,
-        options
-    ).proxy
+        options).proxy
 
     override fun ingress(
         player: Player,
@@ -31,8 +30,7 @@ class ApiTransitionManager(
         player,
         road.cast(),
         Transition.Source.API,
-        options
-    ).proxy
+        options).proxy
 
     override fun ascend(
         player: Player,
@@ -42,8 +40,7 @@ class ApiTransitionManager(
         player,
         road.cast(),
         Transition.Source.API,
-        options
-    ).proxy
+        options).proxy
 
     override fun prestige(
         player: Player,
@@ -53,8 +50,7 @@ class ApiTransitionManager(
         player,
         road.cast(),
         Transition.Source.API,
-        options
-    ).proxy
+        options).proxy
 
     override fun recurse(
         player: Player,
@@ -64,8 +60,7 @@ class ApiTransitionManager(
         player,
         road.cast(),
         Transition.Source.API,
-        options
-    ).proxy
+        options).proxy
 
     override fun egress(
         player: Player,
@@ -75,8 +70,7 @@ class ApiTransitionManager(
         player,
         road.cast(),
         Transition.Source.API,
-        options
-    ).proxy
+        options).proxy
 
     override fun migrate(
         player: Player,
@@ -86,6 +80,5 @@ class ApiTransitionManager(
         player,
         road.cast(),
         Transition.Source.API,
-        options
-    ).proxy
+        options).proxy
 }

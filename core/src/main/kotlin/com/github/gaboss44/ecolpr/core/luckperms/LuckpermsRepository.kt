@@ -14,15 +14,15 @@ class LuckpermsRepository(
     private val adapter = luckperms
         .getPlayerAdapter(Player::class.java)
 
-    val staticQueryOptions get() = luckperms
-        .contextManager
-        .staticQueryOptions
+    val staticQueryOptions get() = luckperms.contextManager.staticQueryOptions
 
-    fun getGroup(name: String) = luckperms
-        .groupManager
-        .getGroup(name)
+    fun getGroup(name: String) = luckperms.groupManager.getGroup(name)
 
     fun isGroupLoaded(group: String) = luckperms.groupManager.isLoaded(group)
+
+    fun getUser(player: Player) = adapter.getUser(player)
+
+    fun saveUser(user: User) = luckperms.userManager.saveUser(user)
 
     fun transferGroup(
         player: Player,
@@ -43,9 +43,4 @@ class LuckpermsRepository(
         )
         saveUser(user)
     }
-
-    fun getUser(player: Player) = adapter.getUser(player)
-
-    fun saveUser(user: User) = luckperms.userManager.saveUser(user)
-
 }

@@ -130,7 +130,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
         return when (fromRank) {
             null -> {
                 val toRank = road.ranks.first()
-                IngressionDto.Call.success(
+                if (toRank.isGroupActive()) IngressionDto.Call.success(
                     doIngress(
                         player,
                         road,
@@ -139,12 +139,13 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
                         options
                     )
                 )
+                else IngressionDto.Call.inactiveRank(player, road, toRank, source)
             }
 
             else -> {
                 val toRank = road.ranks.nextOrNull(fromRank)
                     ?: return AscensionDto.Call.lastRank(player, road, fromRank, source)
-                AscensionDto.Call.success(
+                if (toRank.isGroupActive()) AscensionDto.Call.success(
                     doAscend(
                         player,
                         road,
@@ -154,6 +155,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
                         options
                     )
                 )
+                else AscensionDto.Call.inactiveRank(player, road, fromRank, toRank, source)
             }
         }
     }
@@ -189,9 +191,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
 
         val toRank = road.ranks.first()
 
-        if (!toRank.isGroupActive()) return IngressionDto.Call.inactiveRank(player, road, toRank, source)
-
-        return IngressionDto.Call.success(
+        return if (toRank.isGroupActive()) IngressionDto.Call.success(
             doIngress(
                 player,
                 road,
@@ -200,6 +200,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
                 options
             )
         )
+        else IngressionDto.Call.inactiveRank(player, road, toRank, source)
     }
 
     private fun doIngress(
@@ -287,9 +288,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
 
         val toRank = road.ranks.nextOrNull(fromRank) ?: return AscensionDto.Call.lastRank(player, road, fromRank, source)
 
-        if (!toRank.isGroupActive()) return AscensionDto.Call.inactiveRank(player, road, fromRank, toRank, source)
-
-        return AscensionDto.Call.success(
+        return if (toRank.isGroupActive()) AscensionDto.Call.success(
             doAscend(
                 player,
                 road,
@@ -299,6 +298,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
                 options
             )
         )
+        else AscensionDto.Call.inactiveRank(player, road, fromRank, toRank, source)
     }
 
     private fun doAscend(
@@ -522,9 +522,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
 
         val toRank = road.ranks.first()
 
-        if (!toRank.isGroupActive()) return RecursionDto.Call.inactiveRank(player, road, fromRank, toRank, source)
-
-        return RecursionDto.Call.success(
+        return if (toRank.isGroupActive()) RecursionDto.Call.success(
             doRecurse(
                 player,
                 road,
@@ -534,6 +532,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
                 options
             )
         )
+        else RecursionDto.Call.inactiveRank(player, road, fromRank, toRank, source)
     }
 
     private fun doRecurse(
@@ -648,9 +647,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
 
         val toRank = prestigeRoad.ranks.first()
 
-        if (!toRank.isGroupActive()) return MigrationDto.Call.inactivePrestigeRank(player, road, fromRank, toRank, prestigeRoad, source)
-
-        return MigrationDto.Call.success(
+        return if (toRank.isGroupActive()) MigrationDto.Call.success(
             doMigrate(
                 player,
                 road,
@@ -661,6 +658,7 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
                 options
             )
         )
+        else MigrationDto.Call.inactivePrestigeRank(player, road, fromRank, toRank, prestigeRoad, source)
     }
 
     private fun doMigrate(

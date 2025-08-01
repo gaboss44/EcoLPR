@@ -39,24 +39,23 @@ class EcoLprLangYml(plugin: EcoLprPlugin) : LangYml(plugin) {
     override fun getMessage(
         reference: String,
         option: StringUtils.FormatOption
-    ) = this.getMessage(reference, option) { it }
+    ) = this.getMessage(reference, option, null)
 
     fun getMessage(
         reference: String,
-        apply: (String) -> String
+        replace: (StringBuilder.() -> Unit)? = null
     ) = this.getMessage(
         reference,
         StringUtils.FormatOption.WITH_PLACEHOLDERS,
-        apply
+        replace
     )
 
     fun getMessage(
         reference: String,
         option: StringUtils.FormatOption,
-        apply: (String) -> String
+        replace: (StringBuilder.() -> Unit)? = null
     ): String {
         var string = this.string(reference).also { if (it.isEmpty()) return "" }
-
         if (option == StringUtils.FormatOption.WITH_PLACEHOLDERS)
             for (injection in placeholderInjections) {
                 string = injection.tryTranslateQuickly(
@@ -64,153 +63,121 @@ class EcoLprLangYml(plugin: EcoLprPlugin) : LangYml(plugin) {
                     PlaceholderContext.EMPTY
                 )
             }
-
-        return StringUtils.format(apply(string), option)
+        val replaced = replace?.let { StringBuilder(string).apply(it).toString() } ?: string
+        return StringUtils.format(replaced, option)
     }
 
     fun getMessage(
         reference: String,
-        player: Player
-    ) = getMessage(
-        reference,
-        player
-    ) { it }
-
-    fun getMessage(
-        reference: String,
-        context: PlaceholderContext
-    ) = getMessage(reference, context) { it }
-
-    fun getMessage(
-        reference: String,
         player: Player,
-        apply: (String) -> String
+        replace: (StringBuilder.() -> Unit)? = null
     ) = getMessage(
         reference,
         PlaceholderContext(player),
-        apply
+        replace
     )
 
     fun getMessage(
         reference: String,
         context: PlaceholderContext,
-        apply: (String) -> String
+        replace: (StringBuilder.() -> Unit)? = null
     ): String {
         var string = this.string(reference).also { if (it.isEmpty()) return "" }
-
         for (injection in placeholderInjections) {
             string = injection.tryTranslateQuickly(string, context)
         }
-
-        return StringUtils.format(apply(string), context)
+        val replaced = replace?.let { StringBuilder(string).apply(it).toString() } ?: string
+        return StringUtils.format(replaced, context)
     }
 
     fun getMessages(
         reference: String,
-        option: StringUtils.FormatOption
-    ) = this.getMessages(reference, option) { it }
-
-    fun getMessages(
-        reference: String,
-        apply: (String) -> String
+        replace: (StringBuilder.() -> Unit)? = null
     ) = this.getMessages(
         reference,
         StringUtils.FormatOption.WITH_PLACEHOLDERS,
-        apply
+        replace
     )
 
     fun getMessages(
         reference: String,
         option: StringUtils.FormatOption,
-        apply: (String) -> String
+        replace: (StringBuilder.() -> Unit)? = null
     ): List<String> {
         val strings = this.strings(reference).also { if (it.isEmpty()) return emptyList() }
-
         return strings.map { original ->
-            var str = original
+            var string = original
             if (option == StringUtils.FormatOption.WITH_PLACEHOLDERS) {
                 for (injection in placeholderInjections) {
-                    str = injection.tryTranslateQuickly(str, PlaceholderContext.EMPTY)
+                    string = injection.tryTranslateQuickly(string, PlaceholderContext.EMPTY)
                 }
             }
-            StringUtils.format(apply(str), option)
+            val replaced = replace?.let { StringBuilder(string).apply(it).toString() } ?: string
+            StringUtils.format(replaced, option)
         }
     }
 
     fun getMessages(
         reference: String,
-        player: Player
-    ) = getMessages(
-        reference,
-        player
-    ) { it }
-
-    fun getMessages(
-        reference: String,
-        context: PlaceholderContext
-    ) = getMessages(reference, context) { it }
-
-    fun getMessages(
-        reference: String,
         player: Player,
-        apply: (String) -> String
+        replace: (StringBuilder.() -> Unit)? = null
     ) = getMessages(
         reference,
         PlaceholderContext(player),
-        apply
+        replace
     )
 
     fun getMessages(
         reference: String,
         context: PlaceholderContext,
-        apply: (String) -> String
+        replace: (StringBuilder.() -> Unit)? = null
     ): List<String> {
         val strings = this.strings(reference).also { if (it.isEmpty()) return emptyList() }
-
         return strings.map { original ->
-            var str = original
+            var string = original
             for (injection in placeholderInjections) {
-                str = injection.tryTranslateQuickly(str, context)
+                string = injection.tryTranslateQuickly(string, context)
             }
-            StringUtils.format(apply(str), context)
+            val replaced = replace?.let { StringBuilder(string).apply(it).toString() } ?: string
+            StringUtils.format(replaced, context)
         }
     }
 
     fun sendMessage(
         recipient: CommandSender,
         reference: String,
-        apply: (String) -> String = { it }
+        replace: (StringBuilder.() -> Unit)? = null
     ) = if (recipient is Player) sendMessage(
         recipient,
         reference,
         PlaceholderContext(recipient),
-        apply
+        replace
     ) else sendMessage(
         recipient,
         reference,
         PlaceholderContext.EMPTY,
-        apply
+        replace
     )
 
     fun sendMessage(
         recipient: CommandSender,
         reference: String,
         player: Player,
-        apply: (String) -> String = { it }
+        replace: (StringBuilder.() -> Unit)? = null
     ) = sendMessage(
         recipient,
         reference,
         PlaceholderContext(player),
-        apply
+        replace
     )
 
     fun sendMessage(
         recipient: CommandSender,
         reference: String,
         context: PlaceholderContext,
-        apply: (String) -> String = { it }
+        replace: (StringBuilder.() -> Unit)? = null
     ): Boolean {
-        val message = getMessage(reference, context, apply)
+        val message = getMessage(reference, context, replace)
         if (message.isEmpty()) return false
         recipient.sendMessage(message)
         return true
@@ -219,38 +186,38 @@ class EcoLprLangYml(plugin: EcoLprPlugin) : LangYml(plugin) {
     fun sendMessages(
         recipient: CommandSender,
         reference: String,
-        apply: (String) -> String = { it }
+        replace: (StringBuilder.() -> Unit)? = null
     ): Boolean = if (recipient is Player) sendMessages(
         recipient,
         reference,
         PlaceholderContext(recipient),
-        apply
+        replace
     ) else sendMessages(
         recipient,
         reference,
         PlaceholderContext.EMPTY,
-        apply
+        replace
     )
 
     fun sendMessages(
         recipient: CommandSender,
         reference: String,
         player: Player,
-        apply: (String) -> String = { it }
+        replace: (StringBuilder.() -> Unit)? = null
     ): Boolean = sendMessages(
         recipient,
         reference,
         PlaceholderContext(player),
-        apply
+        replace
     )
 
     fun sendMessages(
         recipient: CommandSender,
         reference: String,
         context: PlaceholderContext,
-        apply: (String) -> String = { it }
+        replace: (StringBuilder.() -> Unit)? = null
     ): Boolean {
-        val messages = getMessages(reference, context, apply)
+        val messages = getMessages(reference, context, replace)
         if (messages.isEmpty()) return false
         messages.forEach { if (it.isNotEmpty()) recipient.sendMessage(it) }
         return true

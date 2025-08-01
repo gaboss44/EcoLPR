@@ -6,7 +6,7 @@ import com.willfp.libreforge.filters.Filter
 import com.willfp.libreforge.triggers.TriggerData
 import org.bukkit.event.Cancellable
 
-object FilterIsCancelled : Filter<NoCompileData, Boolean>("is_cancelled") {
+object FilterIsCancelled : Filter<NoCompileData, Boolean>("ecolpr_is_cancelled") {
     override fun getValue(
         config: Config,
         data: TriggerData?,

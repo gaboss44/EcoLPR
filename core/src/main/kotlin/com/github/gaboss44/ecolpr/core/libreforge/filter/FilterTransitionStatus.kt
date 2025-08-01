@@ -2,6 +2,7 @@ package com.github.gaboss44.ecolpr.core.libreforge.filter
 
 import com.github.gaboss44.ecolpr.api.event.transition.TransitionResultEvent
 import com.github.gaboss44.ecolpr.api.transition.Transition
+import com.github.gaboss44.ecolpr.core.util.asResultOrNull
 import com.willfp.eco.core.config.interfaces.Config
 import com.willfp.libreforge.ConfigWarning
 import com.willfp.libreforge.ViolationContext
@@ -38,7 +39,7 @@ object FilterTransitionStatus : Filter<Collection<Transition.Status>, Collection
         value: Collection<String>,
         compileData: Collection<Transition.Status>
     ): Boolean {
-        val status = (data.event as? TransitionResultEvent)?.transition?.status ?: return false
+        val status = (data.event as? TransitionResultEvent)?.transition?.asResultOrNull()?.status ?: return false
         return compileData.any { status.inherits(it) }
     }
 }
