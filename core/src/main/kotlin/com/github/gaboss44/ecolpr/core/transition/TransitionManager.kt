@@ -327,7 +327,8 @@ class TransitionManager(private val plugin: EcoLprPlugin) {
                 remove = GroupContext(fromRank.group, road.contextSet),
                 add = GroupContext(toRank.group, road.contextSet)
             )
-            return this.also { it.event(options) }
+            this.event(options)
+            return this
         }
 
         return when (options.mode) {
